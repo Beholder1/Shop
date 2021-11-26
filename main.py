@@ -41,7 +41,7 @@ loginEntry = ttk.Entry(frame)
 loginEntry.grid(row=0,column=0,pady=5,sticky="nwes")
 passwordEntry = ttk.Entry(frame, show="●")
 passwordEntry.grid(row=1,column=0,pady=5,sticky="nwes")
-menuButton = tk.Button(frame,text="Zaloguj",background=menuColor, fg=fontColor, relief='flat', command=lambda: combine(root, loginEntry.get(), passwordEntry.get()))
+menuButton = tk.Button(frame,text="Zaloguj",background=menuColor, fg=fontColor, command=lambda: combine(root, loginEntry.get(), passwordEntry.get()))
 menuButton.grid(row=2,column=0,pady=5,sticky="nwes")
 
 
