@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import psycopg2
 
 class MainProgram:
     def __init__(self):
