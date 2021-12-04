@@ -21,7 +21,7 @@ password="2"
 def combine(root, loginGet, passwordGet):
     if loginGet==login and passwordGet==password:
         root.destroy()
-        mainProgram.MainProgram()
+        mainProgram.MainProgram(loginGet)
 
 root = tk.Tk()
 root.geometry("1280x720")

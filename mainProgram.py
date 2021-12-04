@@ -3,7 +3,7 @@ from tkinter import ttk
 import psycopg2
 
 class MainProgram:
-    def __init__(self):
+    def __init__(self, login):
         bgColor = '#FCFCFF'
         acriveColor = "#FDA50F"
         menuColor = '#FD6A02'
@@ -110,141 +110,33 @@ class MainProgram:
 
         frame.grid_propagate(0)
 
+
+
+        # Konto
         frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame2.grid(row=0, column=1, sticky="nwse")
+        ttk.Label(frame2, text="Imię: ").grid(row=0, column=0, sticky="w")
+        ttk.Label(frame2, text="Imię ").grid(row=0, column=1, sticky="w")
+        ttk.Label(frame2, text="Nazwisko: ").grid(row=1, column=0, sticky="w")
+        ttk.Label(frame2, text="Nazwisko ").grid(row=1, column=1, sticky="w")
+        ttk.Label(frame2, text="Login: ").grid(row=2, column=0, sticky="w")
+        ttk.Label(frame2, text="Login").grid(row=2, column=1, sticky="w")
 
-        # DODAJ
-        frame2a = tk.Frame(frame2, width=207, height=92, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame2a.grid(row=0, column=0, pady=5, padx=5)
-        frame2a.grid_propagate(0)
-        ttk.Label(frame2a, text="Dodaj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame2a, text="E-mail: ").grid(row=1, column=0)
-        email = ttk.Entry(frame2a, textvariable=tk.StringVar())
-        email.grid(row=1, column=1)
-        ttk.Label(frame2a, text="Hasło: ").grid(row=2, column=0)
-        password = ttk.Entry(frame2a, textvariable=tk.StringVar())
-        password.grid(row=2, column=1)
-        button = tk.Button(frame2a, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID, borderwidth=1, text="Dodaj")
-        button.grid(row=4, column=1)
 
-        frame2b = tk.Frame(frame2, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame2b.grid(row=1, column=0, pady=5, padx=5)
-        ttk.Label(frame2b, text="Edytuj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame2b, text="Email: ").grid(row=1, column=0)
-        button = tk.Button(frame2b, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID,
-                           borderwidth=1, text="Edytuj")
-        button.grid(row=2, column=1)
-
-        frame2c = tk.Frame(frame2, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame2c.grid(row=2, column=0, pady=5, padx=5)
-        ttk.Label(frame2c, text="Usuń", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame2c, text="Email: ").grid(row=1, column=0)
-        button = tk.Button(frame2c, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID,
-                           borderwidth=1, text="Usuń")
-        button.grid(row=2, column=1)
-
+        # Produkty
         frame3 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame3.grid(row=0, column=1, sticky="nwse")
+        ttk.Label(frame3, text="Wybierz produkt: ", foreground=menuColor).grid(row=0, column=0, sticky="w")
 
-        frame3a = tk.Frame(frame3, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame3a.grid(row=0, column=0, pady=5, padx=5)
-        ttk.Label(frame3a, text="Dodaj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame3a, text="Produkt: ").grid(row=1, column=0)
-        product = ttk.Entry(frame3a, textvariable=tk.StringVar())
-        product.grid(row=1, column=1)
-        ttk.Label(frame3a, text="Tytuł: ").grid(row=2, column=0)
-        title = ttk.Entry(frame3a, textvariable=tk.StringVar())
-        title.grid(row=2, column=1)
-        ttk.Label(frame3a, text="Cena: ").grid(row=3, column=0)
-        price = ttk.Entry(frame3a, textvariable=tk.IntVar())
-        price.grid(row=3, column=1)
-        ttk.Label(frame3a, text="Opis: ").grid(row=4, column=0)
-        desc = ttk.Entry(frame3a, textvariable=tk.StringVar())
-        desc.grid(row=4, column=1)
-        ttk.Label(frame3a, text="Kategoria: ").grid(row=5, column=0)
-        ttk.Label(frame3a, text="Zdjęcia: ").grid(row=6, column=0)
-        images = tk.Button(frame3a, width=8, background=menuColor, text="Wybierz", relief=tk.SOLID, borderwidth=1,
-                           activebackground=acriveColor)
-        images.grid(row=6, column=1)
-        button = tk.Button(frame3a, width=8, background=menuColor, text="Dodaj", relief=tk.SOLID, borderwidth=1,
-                           activebackground=acriveColor)
-        button.grid(row=7, column=1)
-
-        # EDYTUJ
-        frame3b = tk.Frame(frame3, width=241, height=70, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame3b.grid(row=1, column=0, pady=5, padx=5)
-        frame3b.grid_propagate(0)
-        ttk.Label(frame3b, text="Edytuj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame3b, text="Produkt: ").grid(row=1, column=0)
-        combo = ttk.Combobox(frame3b, state="readonly")
-        combo.grid(row=1, column=1)
-        button = tk.Button(frame3b, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID,
-                           borderwidth=1, text="Edytuj")
-        button.grid(row=2, column=1)
-
-        frame3c = tk.Frame(frame3, width=241, height=70, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame3c.grid(row=2, column=0, pady=5, padx=5)
-        frame3c.grid_propagate(0)
-        ttk.Label(frame3c, text="Usuń", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame3c, text="Produkt: ").grid(row=1, column=0)
-        combo = ttk.Combobox(frame3c, state="readonly")
-        combo.grid(row=1, column=1)
-        button = tk.Button(frame3c, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID,
-                           borderwidth=1, text="Usuń")
-        button.grid(row=2, column=1)
-
+        # Dostawy
         frame4 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame4.grid(row=0, column=1, sticky="nwse")
+        ttk.Label(frame4, text="Informacje o dostawach", foreground=menuColor).grid(row=0, column=0, sticky="w")
 
-        # EDYTUJ
-        frame4b = tk.Frame(frame4, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame4b.grid(row=1, column=0, pady=5, padx=5)
-        ttk.Label(frame4b, text="Edytuj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame4b, text="Lokalizacja: ").grid(row=1, column=0)
-        combo = ttk.Combobox(frame4b, state="readonly")
-        combo.grid(row=1, column=1)
-        button = tk.Button(frame4b, width=8, background=menuColor, activebackground=acriveColor, relief=tk.SOLID,
-                           borderwidth=1, text="Edytuj")
-        button.grid(row=2, column=1)
-
-
-        frame4a = tk.Frame(frame4, width=253, height=70, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame4a.grid_propagate(0)
-        frame4a.grid(row=0, column=0, pady=5, padx=5)
-        ttk.Label(frame4a, text="Dodaj", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame4a, text="Lokalizacja: ").grid(row=1, column=0)
-        location = ttk.Entry(frame4a, textvariable=tk.StringVar())
-        location.grid(row=1, column=1)
-        button = tk.Button(frame4a, width=8, background=menuColor, text="Dodaj", activebackground=acriveColor,
-                           relief=tk.SOLID, borderwidth=1)
-        button.grid(row=2, column=1)
-
-
-        frame4c = tk.Frame(frame4, bg="white", relief=tk.RIDGE, borderwidth=1)
-        frame4c.grid(row=2, column=0, pady=5, padx=5)
-        ttk.Label(frame4c, text="Usuń", foreground=menuColor).grid(row=0, column=0, sticky="w")
-        ttk.Label(frame4c, text="Lokalizacja: ").grid(row=1, column=0)
-        combo = ttk.Combobox(frame4c, state="readonly")
-        combo.grid(row=1, column=1)
-        button = tk.Button(frame4c, width=8, background=menuColor, activebackground=acriveColor, text="Usuń",
-                           relief=tk.SOLID, borderwidth=1)
-        button.grid(row=2, column=1)
 
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame1, text="Ukryj: ").grid(row=0, column=0)
-        var1 = tk.IntVar(value=1)
-        check = ttk.Checkbutton(frame1, variable=var1).grid(row=0, column=1, sticky="w")
-        ttk.Label(frame1, text="Konto: ").grid(row=2, column=0)
-        combo1 = ttk.Combobox(frame1, state="readonly")
-        # combo1.current(0)
-        combo1.grid(row=2, column=1, sticky="w")
-        ttk.Label(frame1, text="Ile ogłoszeń: ").grid(row=3, column=0)
-        iterrations = ttk.Entry(frame1, textvariable=tk.IntVar(value=1))
-        iterrations.grid(row=3, column=1, sticky="w")
-        runButton = tk.Button(frame1, background=menuColor, width=8, text="Uruchom", activebackground=acriveColor,
-                              relief=tk.SOLID, borderwidth=1)
-        runButton.grid(row=4, column=1, sticky="w")
+        ttk.Label(frame1, text="Tu będą staty").grid(row=0, column=0)
 
         root.grid_columnconfigure(1, weight=1)
         root.mainloop()
