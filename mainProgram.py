@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
+import user
 import psycopg2
 
 class MainProgram:
     def __init__(self, login):
+        User = user.User(login)
+
         bgColor = '#FCFCFF'
         acriveColor = "#FDA50F"
         menuColor = '#FD6A02'
@@ -115,12 +118,7 @@ class MainProgram:
         # Konto
         frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame2.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame2, text="Imię: ").grid(row=0, column=0, sticky="w")
-        ttk.Label(frame2, text="Imię ").grid(row=0, column=1, sticky="w")
-        ttk.Label(frame2, text="Nazwisko: ").grid(row=1, column=0, sticky="w")
-        ttk.Label(frame2, text="Nazwisko ").grid(row=1, column=1, sticky="w")
-        ttk.Label(frame2, text="Login: ").grid(row=2, column=0, sticky="w")
-        ttk.Label(frame2, text="Login").grid(row=2, column=1, sticky="w")
+        ttk.Label(frame2, text=User).grid(row=0, column=0, sticky="w")
 
 
         # Produkty

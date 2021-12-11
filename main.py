@@ -1,25 +1,15 @@
-# import mysql.connector
-# db = mysql.connector.connect(
-#     host="localhost",
-#     user="root",
-#     passwd="h5k11s00",
-#     database="test"
-# )
-# mycursor=db.cursor()
-
 import tkinter as tk
 from tkinter import ttk
 import mainProgram
+from db import Database
 
+db = Database()
 bgColor = 'white'
 menuColor = 'white'
 fontColor = 'black'
-global login, password
-login="1"
-password="2"
 
 def combine(root, loginGet, passwordGet):
-    if loginGet==login and passwordGet==password:
+    if db.fetch(loginGet)[3] == passwordGet:
         root.destroy()
         mainProgram.MainProgram(loginGet)
 
