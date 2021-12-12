@@ -9,7 +9,7 @@ menuColor = 'white'
 fontColor = 'black'
 
 def combine(root, loginGet, passwordGet):
-    if db.fetch(loginGet)[3] == passwordGet:
+    if db.fetch("users", "login", loginGet)[3] == passwordGet:
         root.destroy()
         mainProgram.MainProgram(loginGet)
 

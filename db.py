@@ -19,7 +19,12 @@ class Database:
         self.cur = self.conn.cursor()
 
 
-    def fetch(self, username):
-        self.cur.execute("SELECT * FROM users WHERE login = '" + username + "'")
+    def fetch(self, table, column, criterion):
+        self.cur.execute("SELECT * FROM " + table + " WHERE " + column + " = '" + criterion + "'")
+        data = self.cur.fetchone()
+        return data
+
+    def fetchColumnAll(self, table, column):
+        self.cur.execute("SELECT " + column + " FROM " + table)
         data = self.cur.fetchone()
         return data

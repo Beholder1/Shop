@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
-import user
+from user import User
+from widgets import AutocompleteCombobox
+from db import Database
 import psycopg2
 
 class MainProgram:
     def __init__(self, login):
-        User = user.User(login)
+        user = User(login)
+        db = Database()
 
         bgColor = '#FCFCFF'
         acriveColor = "#FDA50F"
@@ -118,19 +121,22 @@ class MainProgram:
         # Konto
         frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame2.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame2, text=User).grid(row=0, column=0, sticky="w")
-
+        ttk.Label(frame2, text=user).grid(row=0, column=0, sticky="w")
 
         # Produkty
         frame3 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame3.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame3, text="Wybierz produkt: ", foreground=menuColor).grid(row=0, column=0, sticky="w")
+        ttk.Label(frame3, text="Wybierz produkt: ").grid(row=0, column=0, sticky="w")
+        test_list=["kupa", "dupa", "trupa", "chałupa"]
+        combo1 = AutocompleteCombobox(frame3)
+        combo1.set_completion_list(db.fetchColumnAll("products", "name"))
+        combo1.grid(row=0, column=1, sticky="w")
+        combo1.focus_set()
 
         # Dostawy
         frame4 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame4.grid(row=0, column=1, sticky="nwse")
         ttk.Label(frame4, text="Informacje o dostawach", foreground=menuColor).grid(row=0, column=0, sticky="w")
-
 
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
