@@ -2,13 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from user import User
 from widgets import AutocompleteCombobox
-from db import Database
-import psycopg2
 
 class MainProgram:
-    def __init__(self, login):
+    def __init__(self, db, login):
         user = User(login)
-        db = Database()
 
         bgColor = '#FCFCFF'
         acriveColor = "#FDA50F"
@@ -62,6 +59,8 @@ class MainProgram:
                 productButton.grid_configure(pady=0)
                 locationButton.config(image="", text="Dostawy", borderwidth=0)
                 locationButton.grid_configure(pady=0)
+                employeesButton.config(image="", text="Pracownicy", borderwidth=0)
+                employeesButton.grid_configure(pady=0)
             else:
                 menuButton.config(image=menuIcon, command=expand)
                 homeButton.config(image=homeIcon, borderwidth=0)
@@ -72,6 +71,8 @@ class MainProgram:
                 productButton.grid_configure(pady=5)
                 locationButton.config(image=locationIcon, borderwidth=0)
                 locationButton.grid_configure(pady=5)
+                employeesButton.config(image=employeesIcon, borderwidth=0)
+                employeesButton.grid_configure(pady=5)
 
         menuIcon = tk.PhotoImage(file='icons/menu.png')
         closeIcon = tk.PhotoImage(file='icons/close.png')
@@ -79,6 +80,7 @@ class MainProgram:
         accountIcon = tk.PhotoImage(file='icons/account.png')
         productIcon = tk.PhotoImage(file='icons/product.png')
         locationIcon = tk.PhotoImage(file='icons/delivery.png')
+        employeesIcon = tk.PhotoImage(file='icons/employees.png')
 
         frame = tk.Frame(root, bg=menuColor, width=50, height=root.winfo_height())
         frame.grid(row=0, column=0, sticky='nws')
@@ -110,13 +112,16 @@ class MainProgram:
                                    font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
                                    activebackground=menuColor, command=lambda: raise_frame(frame4))
         locationButton.grid(row=5, column=0, pady=5, sticky='nwe')
+        if(user.role != "pracownik"):
+            employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
+                                       font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                       activebackground=menuColor, command=lambda: raise_frame(frame4))
+            employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
 
         # frame.bind('<Enter>',lambda e: expand())
         # frame.bind('<Leave>',lambda e: contract())
 
         frame.grid_propagate(0)
-
-
 
         # Konto
         frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)

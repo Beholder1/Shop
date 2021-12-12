@@ -11,7 +11,7 @@ fontColor = 'black'
 def combine(root, loginGet, passwordGet):
     if db.fetch("users", "login", loginGet)[3] == passwordGet:
         root.destroy()
-        mainProgram.MainProgram(loginGet)
+        mainProgram.MainProgram(db, loginGet)
 
 root = tk.Tk()
 root.geometry("1280x720")
