@@ -59,8 +59,9 @@ class MainProgram:
                 productButton.grid_configure(pady=0)
                 locationButton.config(image="", text="Dostawy", borderwidth=0)
                 locationButton.grid_configure(pady=0)
-                employeesButton.config(image="", text="Pracownicy", borderwidth=0)
-                employeesButton.grid_configure(pady=0)
+                if (user.role != "pracownik"):
+                    employeesButton.config(image="", text="Pracownicy", borderwidth=0)
+                    employeesButton.grid_configure(pady=0)
             else:
                 menuButton.config(image=menuIcon, command=expand)
                 homeButton.config(image=homeIcon, borderwidth=0)
@@ -71,8 +72,9 @@ class MainProgram:
                 productButton.grid_configure(pady=5)
                 locationButton.config(image=locationIcon, borderwidth=0)
                 locationButton.grid_configure(pady=5)
-                employeesButton.config(image=employeesIcon, borderwidth=0)
-                employeesButton.grid_configure(pady=5)
+                if (user.role != "pracownik"):
+                    employeesButton.config(image=employeesIcon, borderwidth=0)
+                    employeesButton.grid_configure(pady=5)
 
         menuIcon = tk.PhotoImage(file='icons/menu.png')
         closeIcon = tk.PhotoImage(file='icons/close.png')
