@@ -5,7 +5,9 @@ from widgets import AutocompleteCombobox
 
 class MainProgram:
     def __init__(self, db, login):
-        user = User(login)
+        self.db = db
+        self.login = login
+        user = User(self.login)
 
         bgColor = '#FCFCFF'
         acriveColor = "#FDA50F"
@@ -117,7 +119,7 @@ class MainProgram:
         if(user.role != "pracownik"):
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
                                        font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                                       activebackground=menuColor, command=lambda: raise_frame(frame4))
+                                       activebackground=menuColor, command=lambda: raise_frame(frame5))
             employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
 
         # frame.bind('<Enter>',lambda e: expand())
@@ -134,9 +136,8 @@ class MainProgram:
         frame3 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame3.grid(row=0, column=1, sticky="nwse")
         ttk.Label(frame3, text="Wybierz produkt: ").grid(row=0, column=0, sticky="w")
-        test_list=["kupa", "dupa", "trupa", "chałupa"]
         combo1 = AutocompleteCombobox(frame3)
-        combo1.set_completion_list(db.fetchColumnAll("products", "name"))
+        combo1.set_completion_list(self.db.fetchColumnAll("products", "name"))
         combo1.grid(row=0, column=1, sticky="w")
         combo1.focus_set()
 
@@ -145,12 +146,26 @@ class MainProgram:
         frame4.grid(row=0, column=1, sticky="nwse")
         ttk.Label(frame4, text="Informacje o dostawach", foreground=menuColor).grid(row=0, column=0, sticky="w")
 
+        # Pracownicy
+        frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+        frame5.grid(row=0, column=1, sticky="nwse")
+        ttk.Label(frame5, text="Pracownik: ").grid(row=0, column=0, sticky="w")
+        comboEmployees = AutocompleteCombobox(frame5)
+        comboEmployees.set_completion_list(self.db.fetchColumnAll("users", "name"))
+        comboEmployees.grid(row=0, column=1, sticky="w")
+        comboEmployees.focus_set()
+        showEmployeeButton = tk.Button(frame5, text="Pokaż", command=lambda: self.show(frame5, 1, 0, comboEmployees.get()))
+        showEmployeeButton.grid(row=0, column=2)
+
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame1, text="Tu będą staty").grid(row=0, column=0)
+
 
         root.grid_columnconfigure(1, weight=1)
         root.mainloop()
+    def show(self, frame, row, column, entry):
+        employee = User(self.db.fetch("users", "name", entry)[2])
+        ttk.Label(frame, text=employee).grid(row=row, column=column, sticky="w")
 
 
 

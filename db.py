@@ -26,5 +26,9 @@ class Database:
 
     def fetchColumnAll(self, table, column):
         self.cur.execute("SELECT " + column + " FROM " + table)
-        data = self.cur.fetchone()
+        data = self.cur.fetchall()
+        counter=0
+        for i in data:
+            data[counter] = i[0]
+            counter+=1
         return data
