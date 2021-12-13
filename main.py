@@ -8,10 +8,12 @@ bgColor = 'white'
 menuColor = 'white'
 fontColor = 'black'
 
-def combine(root, loginGet, passwordGet):
+
+def combine(rootToDestroy, loginGet, passwordGet):
     if db.fetch("users", "login", loginGet)[3] == passwordGet:
-        root.destroy()
+        rootToDestroy.destroy()
         mainProgram.MainProgram(db, loginGet)
+
 
 root = tk.Tk()
 root.geometry("1280x720")
@@ -29,11 +31,12 @@ frame = tk.Frame(root, bg=menuColor)
 frame.place(relheight=1, relwidth=0.67)
 
 loginEntry = ttk.Entry(frame)
-loginEntry.grid(row=0,column=0,pady=5,sticky="nwes")
+loginEntry.grid(row=0, column=0, pady=5, sticky="nwes")
 passwordEntry = ttk.Entry(frame, show="●")
-passwordEntry.grid(row=1,column=0,pady=5,sticky="nwes")
-menuButton = tk.Button(frame,text="Zaloguj",background=menuColor, fg=fontColor, command=lambda: combine(root, loginEntry.get(), passwordEntry.get()))
-menuButton.grid(row=2,column=0,pady=5,sticky="nwes")
+passwordEntry.grid(row=1, column=0, pady=5, sticky="nwes")
+menuButton = tk.Button(frame, text="Zaloguj", background=menuColor, fg=fontColor,
+                       command=lambda: combine(root, loginEntry.get(), passwordEntry.get()))
+menuButton.grid(row=2, column=0, pady=5, sticky="nwes")
 
 # frame1 = tk.Frame(root, bg=fontColor)
 # frame1.place(relheight=1, relwidth=0.33)

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from user import User
+from product import Product
 from widgets import AutocompleteCombobox
 from datetime import datetime
 
@@ -12,7 +13,7 @@ class MainProgram:
         user = User(self.login)
 
         bgColor = '#FCFCFF'
-        acriveColor = "#FDA50F"
+        activeColor = "#FDA50F"
         menuColor = '#FD6A02'
         fontColor = 'black'
 
@@ -30,12 +31,12 @@ class MainProgram:
         self.cur_width = min_w
         self.expanded = False
 
-        def raise_frame(frame):
-            frame.tkraise()
+        def raise_frame(frameToRaise):
+            frameToRaise.tkraise()
 
         def expand():
             rep = root.after(2, expand)
-            if self.expanded == False:
+            if not self.expanded:
                 self.cur_width += 10
                 frame.config(width=self.cur_width)
             if self.cur_width >= max_w:
@@ -63,7 +64,7 @@ class MainProgram:
                 productButton.grid_configure(pady=0)
                 locationButton.config(image="", text="Dostawy", borderwidth=0)
                 locationButton.grid_configure(pady=0)
-                if (user.role != "pracownik"):
+                if user.role != "pracownik":
                     employeesButton.config(image="", text="Pracownicy", borderwidth=0)
                     employeesButton.grid_configure(pady=0)
             else:
@@ -76,7 +77,7 @@ class MainProgram:
                 productButton.grid_configure(pady=5)
                 locationButton.config(image=locationIcon, borderwidth=0)
                 locationButton.grid_configure(pady=5)
-                if (user.role != "pracownik"):
+                if user.role != "pracownik":
                     employeesButton.config(image=employeesIcon, borderwidth=0)
                     employeesButton.grid_configure(pady=5)
 
@@ -91,57 +92,28 @@ class MainProgram:
         frame = tk.Frame(root, bg=menuColor, width=50, height=root.winfo_height())
         frame.grid(row=0, column=0, sticky='nws')
 
-        menuButton = tk.Button(
-            frame,
-            image=menuIcon,
-            background=menuColor,
-            fg=fontColor,
-            relief=tk.SUNKEN,
-            borderwidth=0,
-            activebackground=menuColor,
-            command=lambda: expand()
-        )
-        menuButton.grid(row=1, column=0, pady=5, padx=(10, 10), sticky='nw')
-        homeButton = tk.Button(frame, image=homeIcon, background=menuColor, fg=fontColor,
-                               font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                               activebackground=menuColor, command=lambda: raise_frame(frame1))
-        homeButton.grid(row=2, column=0, pady=5, sticky='nwe')
-        accountButton = tk.Button(frame, image=accountIcon, background=menuColor, fg=fontColor,
-                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: raise_frame(frame2))
-        accountButton.grid(row=3, column=0, pady=5, sticky='nwe')
-        productButton = tk.Button(frame, image=productIcon, background=menuColor, fg=fontColor,
-                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: raise_frame(frame3))
-        productButton.grid(row=4, column=0, pady=5, sticky='nwe')
-        locationButton = tk.Button(frame, image=locationIcon, background=menuColor, fg=fontColor,
-                                   font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                                   activebackground=menuColor, command=lambda: raise_frame(frame4))
-        locationButton.grid(row=5, column=0, pady=5, sticky='nwe')
-        if (user.role != "pracownik"):
-            employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
-                                        font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
-                                        activebackground=menuColor, command=lambda: raise_frame(frame5))
-            employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
-
-        # frame.bind('<Enter>',lambda e: expand())
-        # frame.bind('<Leave>',lambda e: contract())
-
-        frame.grid_propagate(0)
-
         # Konto
         frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame2.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame2, text=user).grid(row=0, column=0, sticky="w")
+        ttk.Label(frame2, text=user.__str__()).grid(row=0, column=0, sticky="w")
 
         # Produkty
         frame3 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame3.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame3, text="Wybierz produkt: ").grid(row=0, column=0, sticky="w")
-        combo1 = AutocompleteCombobox(frame3)
-        combo1.set_completion_list(self.db.fetchColumnAll("products", "name"))
-        combo1.grid(row=0, column=1, sticky="w")
-        combo1.focus_set()
+        ttk.Label(frame3, text="Produkt: ").grid(row=0, column=0, sticky="w")
+        comboProductName = AutocompleteCombobox(frame3)
+        comboProductName.set_completion_list(self.db.fetchColumnAll("products", "name"))
+        comboProductName.grid(row=0, column=1, sticky="w")
+        comboProductName.focus_set()
+        ttk.Label(frame3, text="Producent: ").grid(row=1, column=0, sticky="w")
+        comboProductBrand = AutocompleteCombobox(frame3)
+        comboProductBrand.set_completion_list(self.db.fetchColumnAll("products", "mark"))
+        comboProductBrand.grid(row=1, column=1, sticky="w")
+        comboProductBrand.focus_set()
+        showProductButton = tk.Button(frame3, text="Pokaż",
+                                      command=lambda: self.show(frame3, 2, 0, Product(comboProductName.get(),
+                                                                                      comboProductBrand.get())))
+        showProductButton.grid(row=0, column=2)
 
         # Dostawy
         frame4 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
@@ -159,7 +131,8 @@ class MainProgram:
         comboEmployees.grid(row=0, column=1, sticky="w")
         comboEmployees.focus_set()
         showEmployeeButton = tk.Button(frame5a, text="Pokaż",
-                                       command=lambda: self.show(frame5a, 1, 0, comboEmployees.get()))
+                                       command=lambda: self.show(frame5a, 1, 0, User(
+                                           self.db.fetch("users", "name", comboEmployees.get())[2])))
         showEmployeeButton.grid(row=0, column=2)
 
         frame5b = tk.Frame(frame5, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
@@ -201,19 +174,58 @@ class MainProgram:
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
 
+        menuButton = tk.Button(
+            frame,
+            image=menuIcon,
+            background=menuColor,
+            fg=fontColor,
+            relief=tk.SUNKEN,
+            borderwidth=0,
+            activebackground=menuColor,
+            command=lambda: expand()
+        )
+        menuButton.grid(row=1, column=0, pady=5, padx=(10, 10), sticky='nw')
+        homeButton = tk.Button(frame, image=homeIcon, background=menuColor, fg=fontColor,
+                               font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                               activebackground=menuColor, command=lambda: raise_frame(frame1))
+        homeButton.grid(row=2, column=0, pady=5, sticky='nwe')
+        accountButton = tk.Button(frame, image=accountIcon, background=menuColor, fg=fontColor,
+                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                  activebackground=menuColor, command=lambda: raise_frame(frame2))
+        accountButton.grid(row=3, column=0, pady=5, sticky='nwe')
+        productButton = tk.Button(frame, image=productIcon, background=menuColor, fg=fontColor,
+                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                  activebackground=menuColor, command=lambda: raise_frame(frame3))
+        productButton.grid(row=4, column=0, pady=5, sticky='nwe')
+        locationButton = tk.Button(frame, image=locationIcon, background=menuColor, fg=fontColor,
+                                   font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                   activebackground=menuColor, command=lambda: raise_frame(frame4))
+        locationButton.grid(row=5, column=0, pady=5, sticky='nwe')
+        if user.role != "pracownik":
+            employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
+                                        font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                        activebackground=menuColor, command=lambda: raise_frame(frame5))
+            employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
+
+        # frame.bind('<Enter>',lambda e: expand())
+        # frame.bind('<Leave>',lambda e: contract())
+
+        frame.grid_propagate(False)
+
         root.grid_columnconfigure(1, weight=1)
         root.mainloop()
 
-    def show(self, frame, row, column, entry):
-        employee = User(self.db.fetch("users", "name", entry)[2])
-        ttk.Label(frame, text=employee).grid(row=row, column=column, sticky="w")
+    @staticmethod
+    def show(frame, row, column, objectToShow):
+        ttk.Label(frame, text=objectToShow.__str__()).grid(row=row, column=column, sticky="w")
 
-    def createLogin(self, name, lastName):
-        if(len(name)>3):
+    @staticmethod
+    def createLogin(name, lastName):
+        if len(name) > 3:
             login = name[:-(len(name) - 3)]
         else:
             login = name
-        if(len(lastName)>3):
+        if len(lastName) > 3:
             login = login + lastName[:-(len(lastName) - 3)]
         else:
             login = login + lastName
