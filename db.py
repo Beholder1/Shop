@@ -32,3 +32,8 @@ class Database:
             data[counter] = i[0]
             counter+=1
         return data
+
+    def insertUser(self, deptId, login, password, role, email, name, lastName, salary, pesel, createdOn, managerId):
+        self.cur.execute("INSERT INTO users VALUES (default, " + str(deptId) + ", '" + login + "', '" + password + "', '" + role + "', '" + email + "', '" + name + "', '" + lastName + "', " + salary + ", '" + pesel + "', '" + str(createdOn) + "', NULL, " + str(managerId) + ")")
+        self.conn.commit()
+        # (user_id, dept_id, login, password, role, email, name, last_name, salary, pesel, created_on, last_login, manager_id)
