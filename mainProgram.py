@@ -3,7 +3,7 @@ from tkinter import ttk
 from user import User
 from product import Product
 from widgets import AutocompleteCombobox
-from datetime import datetime
+
 
 
 class MainProgram:
@@ -156,51 +156,12 @@ class MainProgram:
         frame5.grid(row=0, column=1, sticky="nwse")
         frame5a = tk.Frame(frame5, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame5a.grid(row=0, column=0, sticky="nwse")
-        ttk.Label(frame5a, text="Pracownik: ").grid(row=0, column=0, sticky="w")
-        comboEmployees = AutocompleteCombobox(frame5a)
-        comboEmployees.set_completion_list(self.db.fetchColumnAll("users", "name"))
-        comboEmployees.grid(row=0, column=1, sticky="w")
-        comboEmployees.focus_set()
-        showEmployeeButton = tk.Button(frame5a, text="Pokaż",
-                                       command=lambda: self.show(frame5a, 1, 0, User(
-                                           self.db.fetch("users", "name", comboEmployees.get())[2])))
-        showEmployeeButton.grid(row=0, column=2)
+        user.showUser(frame5a, self.show)
 
         frame5b = tk.Frame(frame5, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame5b.grid(row=0, column=1, sticky="nwse")
+        user.addUser(frame5b)
 
-        ttk.Label(frame5b, text="Imię: ").grid(row=0, column=0, sticky="w")
-        entryEmployeeName = ttk.Entry(frame5b)
-        entryEmployeeName.grid(row=0, column=1, sticky="w")
-
-        ttk.Label(frame5b, text="Nazwisko: ").grid(row=1, column=0, sticky="w")
-        entryEmployeeLastName = ttk.Entry(frame5b)
-        entryEmployeeLastName.grid(row=1, column=1, sticky="w")
-
-        ttk.Label(frame5b, text="PESEL: ").grid(row=2, column=0, sticky="w")
-        entryEmployeePesel = ttk.Entry(frame5b)
-        entryEmployeePesel.grid(row=2, column=1, sticky="w")
-
-        ttk.Label(frame5b, text="Email: ").grid(row=3, column=0, sticky="w")
-        entryEmployeeEmail = ttk.Entry(frame5b)
-        entryEmployeeEmail.grid(row=3, column=1, sticky="w")
-
-        ttk.Label(frame5b, text="Pensja: ").grid(row=4, column=0, sticky="w")
-        entryEmployeeSalary = ttk.Entry(frame5b)
-        entryEmployeeSalary.grid(row=4, column=1, sticky="w")
-
-        addEmployeeButton = tk.Button(frame5, text="Dodaj",
-                                      command=lambda: self.db.insertUser(user.dept_id,
-                                                                         self.createLogin(entryEmployeeName.get(),
-                                                                                          entryEmployeeLastName.get()),
-                                                                         entryEmployeePesel.get(), "pracownik",
-                                                                         entryEmployeeEmail.get(),
-                                                                         entryEmployeeName.get(),
-                                                                         entryEmployeeLastName.get(),
-                                                                         entryEmployeeSalary.get(),
-                                                                         entryEmployeePesel.get(), datetime.now(),
-                                                                         user.id))
-        addEmployeeButton.grid(row=5, column=1)
 
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
