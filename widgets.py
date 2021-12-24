@@ -64,7 +64,7 @@ class SidebarMenu():
         locationIcon = tk.PhotoImage(file='icons/delivery.png')
         employeesIcon = tk.PhotoImage(file='icons/employees.png')
 
-        menuColor = '#FD6A02'
+        menuColor = '#0589CF'
         fontColor = 'black'
         min_w = 50
         max_w = 150

@@ -13,9 +13,16 @@ pyglet.font.add_file('Roboto-Light.ttf')
 
 
 def combine(rootToDestroy, loginGet, passwordGet):
-    if db.fetch("users", "login", loginGet)[3] == passwordGet:
-        rootToDestroy.destroy()
-        mainProgram.MainProgram(db, loginGet)
+    if loginGet == '' or (loginGet == '' and passwordGet == ''):
+        errorLabel.configure(text="Nie podano nazwy użytkownika")
+    elif passwordGet == '':
+        errorLabel.configure(text="Nie podano hasła")
+    else:
+        if db.fetch("users", "login", loginGet)[3] == passwordGet:
+            rootToDestroy.destroy()
+            mainProgram.MainProgram(db, loginGet)
+        else:
+            errorLabel.configure(text="Niepoprawne hasło")
 
 
 root = tk.Tk()
@@ -43,7 +50,8 @@ loginEntry.grid(row=1, column=0, pady=5, sticky="nwes")
 ttk.Label(frameInterior, text="Hasło", background=menuColor).grid(row=2, column=0, pady=(10, 0), sticky="nwes")
 passwordEntry = ttk.Entry(frameInterior, show="●")
 passwordEntry.grid(row=3, column=0, pady=5, sticky="nwes")
-ttk.Label(frameInterior, text="Nazwa użytkownika", background=menuColor).grid(row=4, column=0, sticky="nwes")
+errorLabel = ttk.Label(frameInterior, text="", font=('Roboto Light', 8), foreground="red", background=menuColor)
+errorLabel.grid(row=4, column=0, sticky="nwes")
 menuButton = tk.Button(frameInterior, text="Zaloguj", font=("Roboto Light", 12), width=widgetWidth,
                        background="#0589CF", fg="white",
                        command=lambda: combine(root, loginEntry.get(), passwordEntry.get()))

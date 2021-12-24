@@ -20,8 +20,9 @@ class MainProgram:
         root = tk.Tk()
         root.configure(background=bgColor)
         root.grid_rowconfigure(0, weight=1)
+        root.geometry("1280x720")
 
-        root.title("Kamil Włodarczyk to kozak")
+        root.title("Store manager")
 
         style = ttk.Style()
         style.configure('TLabel', background="white", foreground=fontColor, font=('Roboto Light', 12))
@@ -88,7 +89,16 @@ class MainProgram:
         # Dostawy
         frame4 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame4.grid(row=0, column=1, sticky="nwse")
-        ttk.Label(frame4, text="Informacje o dostawach", foreground=fontColor).grid(row=0, column=0, sticky="w")
+        orders = db.fetchAll("orders")
+        frameOrderList = tk.Frame(frame4)
+        frameOrderList.place(relx=0.5, rely=0.02, anchor=tk.CENTER)
+        ttk.Label(frameOrderList, text="Id").grid(row=0, column=0, sticky="nwes")
+        ttk.Label(frameOrderList, text="Data zamówienia").grid(row=0, column=1, sticky="nwes")
+        ttk.Label(frameOrderList, text="Status").grid(row=0, column=2, sticky="nwes")
+        ttk.Label(frameOrderList, text="Złożone przez").grid(row=0, column=3, sticky="nwes")
+        ttk.Label(frameOrderList, text="Suma").grid(row=0, column=4, sticky="nwes")
+
+        # for i in range(10):
 
         # Pracownicy
         frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)

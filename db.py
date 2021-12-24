@@ -24,6 +24,11 @@ class Database:
         data = self.cur.fetchone()
         return data
 
+    def fetchAll(self, table):
+        self.cur.execute("SELECT * FROM " + table)
+        data = self.cur.fetchall()
+        return data
+
     def fetchColumnAll(self, table, column):
         self.cur.execute("SELECT DISTINCT " + column + " FROM " + table)
         data = self.cur.fetchall()
