@@ -4,6 +4,7 @@ from user import User
 from product import Product
 from widgets import AutocompleteCombobox
 from widgets import SidebarMenu
+import pyglet
 
 
 class MainProgram:
@@ -13,9 +14,8 @@ class MainProgram:
         user = User(self.login)
 
         bgColor = '#FCFCFF'
-        activeColor = "#FDA50F"
-        menuColor = '#FD6A02'
         fontColor = 'black'
+        pyglet.font.add_file('Roboto-Light.ttf')
 
         root = tk.Tk()
         root.configure(background=bgColor)
@@ -24,7 +24,7 @@ class MainProgram:
         root.title("Kamil Włodarczyk to kozak")
 
         style = ttk.Style()
-        style.configure('TLabel', background="white", foreground=fontColor, font=('Verdana', 12))
+        style.configure('TLabel', background="white", foreground=fontColor, font=('Roboto Light', 12))
         style.configure('TCheckbutton', background="white")
 
         # Konto
