@@ -25,7 +25,7 @@ class Database:
         return data
 
     def fetchColumnAll(self, table, column):
-        self.cur.execute("SELECT " + column + " FROM " + table)
+        self.cur.execute("SELECT DISTINCT " + column + " FROM " + table)
         data = self.cur.fetchall()
         counter = 0
         for i in data:
