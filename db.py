@@ -57,3 +57,6 @@ class Database:
             data[counter] = i[0]
             counter += 1
         return data
+
+    def disconnect(self):
+        self.conn.close()

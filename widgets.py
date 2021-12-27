@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from main import Login
 
 
 class AutocompleteCombobox(ttk.Combobox):
@@ -55,7 +56,7 @@ class AutocompleteCombobox(ttk.Combobox):
 
 
 class SidebarMenu():
-    def __init__(self, root, frame1, frame2, frame3, frame4, frame5, user):
+    def __init__(self, root, frame1, frame2, frame3, frame4, frame5, user, db):
         menuIcon = tk.PhotoImage(file='icons/menu.png')
         closeIcon = tk.PhotoImage(file='icons/close.png')
         homeIcon = tk.PhotoImage(file='icons/home.png')
@@ -63,6 +64,7 @@ class SidebarMenu():
         productIcon = tk.PhotoImage(file='icons/product.png')
         locationIcon = tk.PhotoImage(file='icons/delivery.png')
         employeesIcon = tk.PhotoImage(file='icons/employees.png')
+        logoutIcon = tk.PhotoImage(file='icons/logout.png')
 
         menuColor = '#0589CF'
         fontColor = 'black'
@@ -104,6 +106,8 @@ class SidebarMenu():
                 productButton.grid_configure(pady=0)
                 locationButton.config(image="", text="Dostawy", borderwidth=0)
                 locationButton.grid_configure(pady=0)
+                logoutButton.config(image="", text="Wyloguj", borderwidth=0)
+                logoutButton.grid_configure(pady=0)
                 if user.role != "pracownik":
                     employeesButton.config(image="", text="Pracownicy", borderwidth=0)
                     employeesButton.grid_configure(pady=0)
@@ -117,6 +121,8 @@ class SidebarMenu():
                 productButton.grid_configure(pady=5)
                 locationButton.config(image=locationIcon, borderwidth=0)
                 locationButton.grid_configure(pady=5)
+                logoutButton.config(image=logoutIcon, borderwidth=0)
+                logoutButton.grid_configure(pady=5)
                 if user.role != "pracownik":
                     employeesButton.config(image=employeesIcon, borderwidth=0)
                     employeesButton.grid_configure(pady=5)
@@ -133,24 +139,39 @@ class SidebarMenu():
         )
         menuButton.grid(row=1, column=0, pady=5, padx=(10, 10), sticky='nw')
         homeButton = tk.Button(frame, image=homeIcon, background=menuColor, fg=fontColor,
-                               font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                               font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                activebackground=menuColor, command=lambda: frame1.tkraise())
         homeButton.grid(row=2, column=0, pady=5, sticky='nwe')
         accountButton = tk.Button(frame, image=accountIcon, background=menuColor, fg=fontColor,
-                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                  font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                   activebackground=menuColor, command=lambda: frame2.tkraise())
         accountButton.grid(row=3, column=0, pady=5, sticky='nwe')
         productButton = tk.Button(frame, image=productIcon, background=menuColor, fg=fontColor,
-                                  font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                  font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                   activebackground=menuColor, command=lambda: frame3.tkraise())
         productButton.grid(row=4, column=0, pady=5, sticky='nwe')
         locationButton = tk.Button(frame, image=locationIcon, background=menuColor, fg=fontColor,
-                                   font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                    activebackground=menuColor, command=lambda: frame4.tkraise())
         locationButton.grid(row=5, column=0, pady=5, sticky='nwe')
+
+        def logout():
+            root.destroy()
+            db.disconnect()
+            Login()
+
+        logoutButton = tk.Button(frame, image=logoutIcon, background=menuColor, fg=fontColor,
+                                 font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
+                                 activebackground=menuColor, command=lambda: logout())
+
         if user.role != "pracownik":
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
-                                        font=('MS Reference Sans Serif', 13), relief=tk.SUNKEN, borderwidth=0,
+                                        font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                         activebackground=menuColor, command=lambda: frame5.tkraise())
             employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
+            logoutButton.grid(row=7, column=0, pady=5, sticky='nwe')
+        else:
+            logoutButton.grid(row=6, column=0, pady=5, sticky='nwe')
+
+
         frame.grid_propagate(False)

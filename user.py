@@ -1,4 +1,3 @@
-from db import Database
 import tkinter as tk
 from tkinter import ttk
 from widgets import AutocompleteCombobox
@@ -6,8 +5,8 @@ from datetime import datetime
 
 
 class User:
-    def __init__(self, login):
-        self.db = Database()
+    def __init__(self, login, db):
+        self.db = db
         self.login = login
         [self.id,
          self.dept_id,
