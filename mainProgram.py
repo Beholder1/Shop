@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from user import User
 from product import Product
-from widgets import AutocompleteCombobox, SidebarMenu
+from widgets import AutocompleteCombobox, SidebarMenu, WidgetList
 import pyglet
 
 
@@ -43,87 +43,7 @@ class MainProgram:
         frame3.grid(row=0, column=1, sticky="nwse")
         frame3.grid_propagate(False)
 
-        def listOfProducts(startingIndex):
-            buttonsFrame3 = tk.Frame(frame3)
-            buttonsFrame3.grid(row=0, column=0, sticky="w")
-            addButton3 = tk.Button(buttonsFrame3, image=addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                   activebackground=bgColor)
-            addButton3.grid(row=0, column=0, sticky="w")
-            refreshButton3 = tk.Button(buttonsFrame3, image=refreshIcon, relief=tk.SUNKEN, borderwidth=0,
-                                       background=bgColor,
-                                       activebackground=bgColor, command=lambda: listOfProducts())
-            refreshButton3.grid(row=0, column=1, sticky="w")
-            frame3.grid_columnconfigure(0, weight=1)
-            frame3.grid_columnconfigure(1, weight=1)
-            frame3.grid_columnconfigure(2, weight=1)
-            frame3.grid_columnconfigure(3, weight=1)
-            frame3.grid_columnconfigure(4, weight=1)
-            ttk.Label(frame3, text="Id").grid(row=1, column=0, sticky="nwse")
-            ttk.Label(frame3, text="Nazwa").grid(row=1, column=1, sticky="nwse")
-            ttk.Label(frame3, text="Producent").grid(row=1, column=2, sticky="nwse")
-            ttk.Label(frame3, text="Cena zakupu").grid(row=1, column=3, sticky="nwse")
-            ttk.Label(frame3, text="Cena sprzedaży").grid(row=1, column=4, sticky="nwse")
-            productList = db.fetchAll("products")
-            productList.sort()
-            iterator = 25
-            rangeEnd = iterator + startingIndex
-            for startingIndex in range(rangeEnd):
-                ttk.Label(frame3, text=productList[startingIndex][0]).grid(row=startingIndex % iterator + 2, column=0,
-                                                                           sticky="nwse")
-                ttk.Label(frame3, text=productList[startingIndex][1]).grid(row=startingIndex % iterator + 2, column=1,
-                                                                           sticky="nwse")
-                ttk.Label(frame3, text=productList[startingIndex][2]).grid(row=startingIndex % iterator + 2, column=2,
-                                                                           sticky="nwse")
-                ttk.Label(frame3, text=productList[startingIndex][3]).grid(row=startingIndex % iterator + 2, column=3,
-                                                                           sticky="nwse")
-                ttk.Label(frame3, text=productList[startingIndex][4]).grid(row=startingIndex % iterator + 2, column=4,
-                                                                           sticky="nwse")
-                displayButton = tk.Button(frame3, image=displayIcon, relief=tk.SUNKEN, borderwidth=0,
-                                          background=bgColor,
-                                          activebackground=bgColor)
-                displayButton.grid(row=startingIndex % iterator + 2, column=5, sticky="w")
-                deleteButton = tk.Button(frame3, image=deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                         activebackground=bgColor)
-                deleteButton.grid(row=startingIndex % iterator + 2, column=6, sticky="w")
-
-            pageButtonsFrame3 = tk.Frame(frame3)
-            pageButtonsFrame3.grid(row=startingIndex % iterator + 3, column=0, sticky="w")
-            previousPageButton = tk.Button(pageButtonsFrame3, text="|<", relief=tk.SUNKEN, borderwidth=0,
-                                           background=bgColor,
-                                           activebackground=bgColor,
-                                           command=lambda: listOfProducts(0))
-            previousPageButton.grid(row=0, column=0, sticky="w")
-            previousPageButton = tk.Button(pageButtonsFrame3, text="<", relief=tk.SUNKEN, borderwidth=0,
-                                           background=bgColor,
-                                           activebackground=bgColor,
-                                           command=lambda: listOfProducts(rangeEnd - 2 * iterator))
-            previousPageButton.grid(row=0, column=1, sticky="w")
-            page1Button = tk.Button(pageButtonsFrame3, text="1", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page1Button.grid(row=0, column=2, sticky="w")
-            page2Button = tk.Button(pageButtonsFrame3, text="2", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page2Button.grid(row=0, column=3, sticky="w")
-            page3Button = tk.Button(pageButtonsFrame3, text="3", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page3Button.grid(row=0, column=4, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="5", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page4Button.grid(row=0, column=5, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="6", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page4Button.grid(row=0, column=6, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="7", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor)
-            page4Button.grid(row=0, column=7, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text=">", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor, command=lambda: listOfProducts(rangeEnd))
-            page4Button.grid(row=0, column=8, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text=">|", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor, command=lambda: listOfProducts(rangeEnd))
-            page4Button.grid(row=0, column=8, sticky="w")
-
-        listOfProducts(0)
+        WidgetList(frame3, db)
 
         # Dostawy
         frame4 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
