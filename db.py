@@ -44,9 +44,9 @@ class Database:
             createdOn) + "', NULL, " + str(managerId) + ")")
         self.conn.commit()
 
-    def insertProduct(self, price, brand, category, unit, name):
-        self.cur.execute("INSERT INTO products VALUES (default, " +
-                         price + ", '" + brand + "', '" + category + "', '" + unit + "', '" + name + "')")
+    def insertProduct(self, name, selling_price, purchase_price, brand, category, unit, tax_rate):
+        self.cur.execute("INSERT INTO products VALUES (default, '" +
+                         name + "', '" + selling_price + "', '" + purchase_price + "', '" + brand + "', '" + category + "', '" + unit + "', '" + tax_rate + "')")
         self.conn.commit()
 
     def getEnum(self, name):

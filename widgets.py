@@ -215,7 +215,7 @@ class MessageBox:
 
 
 class AddBox:
-    def __init__(self, popButton):
+    def __init__(self, popButton, db):
         def command():
             flag = True
             for entry in self.entries:
@@ -225,7 +225,9 @@ class AddBox:
                     flag = False
             if flag:
                 popButton.config(state="normal")
-                # add
+                db.insertProduct(self.entries[0].get(), self.entries[3].get(), self.entries[2].get(),
+                                 self.entries[1].get(), self.entries[4].get(), self.entries[5].get(),
+                                 self.entries[6].get())
                 self.root.destroy()
 
         def close():
@@ -247,81 +249,100 @@ class AddBox:
 
         ttk.Label(self.root, text="Nazwa:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0,
                                                                                                 sticky="w")
-        entry1 = ttk.Entry(self.root)
-        entry1.grid(row=0, column=1, sticky="w")
+        entry0 = ttk.Entry(self.root)
+        entry0.grid(row=0, column=1, sticky="w")
 
         ttk.Label(self.root, text="Producent:", background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0,
                                                                                                     sticky="w")
-        entry2 = ttk.Entry(self.root)
-        entry2.grid(row=1, column=1, sticky="w")
+        entry1 = ttk.Entry(self.root)
+        entry1.grid(row=1, column=1, sticky="w")
 
         ttk.Label(self.root, text="Cena zakupu:", background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=0,
                                                                                                       sticky="w")
-        entry3 = ttk.Entry(self.root)
-        entry3.grid(row=2, column=1, sticky="w")
+        entry2 = ttk.Entry(self.root)
+        entry2.grid(row=2, column=1, sticky="w")
 
         ttk.Label(self.root, text="Cena sprzedaży:", background=bgColor, font=("Roboto Light", 12)).grid(row=3,
                                                                                                          column=0,
                                                                                                          sticky="w")
-        entry4 = ttk.Entry(self.root)
-        entry4.grid(row=3, column=1, sticky="w")
+        entry3 = ttk.Entry(self.root)
+        entry3.grid(row=3, column=1, sticky="w")
 
         ttk.Label(self.root, text="Kategoria:", background=bgColor, font=("Roboto Light", 12)).grid(row=4, column=0,
                                                                                                     sticky="w")
-        entry5 = ttk.Entry(self.root)
-        entry5.grid(row=4, column=1, sticky="w")
+        entry4 = ttk.Entry(self.root)
+        entry4.grid(row=4, column=1, sticky="w")
 
-        ttk.Label(self.root, text="Podatek:", background=bgColor, font=("Roboto Light", 12)).grid(row=5, column=0,
+        ttk.Label(self.root, text="Jednostka:", background=bgColor, font=("Roboto Light", 12)).grid(row=5, column=0,
+                                                                                                    sticky="w")
+        entry5 = ttk.Combobox(self.root, values=db.getEnum("amount_type"))
+        entry5.grid(row=5, column=1, sticky="w")
+
+        ttk.Label(self.root, text="Podatek:", background=bgColor, font=("Roboto Light", 12)).grid(row=6, column=0,
                                                                                                   sticky="w")
         entry6 = ttk.Entry(self.root)
-        entry6.grid(row=5, column=1, sticky="w")
+        entry6.grid(row=6, column=1, sticky="w")
+        ttk.Label(self.root, text="%", background=bgColor, font=("Roboto Light", 12)).grid(row=6, column=2,
+                                                                                           sticky="w")
 
-        self.entries = (entry1, entry2, entry3, entry4, entry5, entry6)
+        self.entries = (entry0, entry1, entry2, entry3, entry4, entry5, entry6)
 
         self.errorLabel = ttk.Label(self.root, text="", foreground="red", background=bgColor, font=("Roboto Light", 8))
-        self.errorLabel.grid(row=6, column=0, sticky="w")
+        self.errorLabel.grid(row=7, column=0, sticky="w")
 
         tk.Button(self.root, text="Dodaj", width=10, background=buttonColor, fg="white",
                   command=lambda: command()).grid(row=7, column=0, sticky="w")
 
 
 class WidgetList:
-    def __init__(self, frame, db):
+    def __init__(self, frame, db, table, indexesNames):
         self.addIcon = tk.PhotoImage(file='icons/add.png')
         self.refreshIcon = tk.PhotoImage(file='icons/refresh.png')
         self.displayIcon = tk.PhotoImage(file='icons/display.png')
+        self.editIcon = tk.PhotoImage(file='icons/edit.png')
         self.deleteIcon = tk.PhotoImage(file='icons/delete.png')
 
         bgColor = '#FFFFFF'
 
         self.startingIndex = 0
-        self.productList = db.fetchAll("products")
+        self.productList = db.fetchAll(table)
         self.productList.sort()
         self.iterator = 25
         self.rangeEnd = self.iterator + self.startingIndex
         self.labels = []
         self.choices = ("start", "backwards", "forwards", "end", "refresh")
 
+        indexes = []
+        names = []
+        for i in indexesNames:
+            flag = False
+            index = ""
+            name = ""
+            for j in i:
+                if j == ".":
+                    flag = True
+                elif flag == False:
+                    index += j
+                elif flag == True:
+                    name += j
+            indexes.append(int(index))
+            names.append(name)
+
         buttonsFrame = tk.Frame(frame)
         buttonsFrame.grid(row=0, column=0, sticky="w")
         addButton = tk.Button(buttonsFrame, image=self.addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                              activebackground=bgColor, command=lambda: AddBox(addButton))
+                              activebackground=bgColor, command=lambda: AddBox(addButton, db))
         addButton.grid(row=0, column=0, sticky="w")
         refreshButton = tk.Button(buttonsFrame, image=self.refreshIcon, relief=tk.SUNKEN, borderwidth=0,
                                   background=bgColor,
                                   activebackground=bgColor,
                                   command=lambda: configureWidgets(self.startingIndex, self.choices[4]))
         refreshButton.grid(row=0, column=1, sticky="w")
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_columnconfigure(1, weight=1)
-        frame.grid_columnconfigure(2, weight=1)
-        frame.grid_columnconfigure(3, weight=1)
-        frame.grid_columnconfigure(4, weight=1)
-        ttk.Label(frame, text="Id").grid(row=1, column=0, sticky="nwse")
-        ttk.Label(frame, text="Nazwa").grid(row=1, column=1, sticky="nwse")
-        ttk.Label(frame, text="Producent").grid(row=1, column=2, sticky="nwse")
-        ttk.Label(frame, text="Cena zakupu").grid(row=1, column=3, sticky="nwse")
-        ttk.Label(frame, text="Cena sprzedaży").grid(row=1, column=4, sticky="nwse")
+        for i in range(5):
+            frame.grid_columnconfigure(i, weight=1)
+
+        for i in range(5):
+            ttk.Label(frame, text=names[i]).grid(row=1, column=i, sticky="nwse")
 
         def configureWidgets(index, choice):
             if (index >= len(self.productList)) and choice == self.choices[2]:
@@ -333,14 +354,12 @@ class WidgetList:
                 self.productList.sort()
                 index -= self.iterator - 1
             counter = index
-            for i in self.labels:
-                i[0].configure(text=self.productList[counter][0])
-                i[1].configure(text=self.productList[counter][1])
-                i[2].configure(text=self.productList[counter][2])
-                i[3].configure(text=self.productList[counter][3])
-                i[4].configure(text=self.productList[counter][4])
-                i[5].configure()
-                i[6].configure()
+            for widget in self.labels:
+                for label in range(5):
+                    widget[label].configure(text=self.productList[counter][indexes[label]])
+                widget[5].configure()
+                widget[6].configure()
+                widget[7].configure()
                 counter += 1
             if choice == self.choices[0]:
                 self.rangeEnd = self.iterator
@@ -360,29 +379,33 @@ class WidgetList:
 
         for self.startingIndex in range(self.rangeEnd):
             columns = []
-            label1 = ttk.Label(frame, text=self.productList[self.startingIndex][0])
-            label1.grid(row=self.startingIndex % self.iterator + 2, column=0, sticky="nwse")
+            label0 = ttk.Label(frame, text=self.productList[self.startingIndex][indexes[0]])
+            label0.grid(row=self.startingIndex % self.iterator + 2, column=0, sticky="nwse")
+            columns.append(label0)
+            label1 = ttk.Label(frame, text=self.productList[self.startingIndex][indexes[1]])
+            label1.grid(row=self.startingIndex % self.iterator + 2, column=1, sticky="nwse")
             columns.append(label1)
-            label2 = ttk.Label(frame, text=self.productList[self.startingIndex][1])
-            label2.grid(row=self.startingIndex % self.iterator + 2, column=1, sticky="nwse")
+            label2 = ttk.Label(frame, text=self.productList[self.startingIndex][indexes[2]])
+            label2.grid(row=self.startingIndex % self.iterator + 2, column=2, sticky="nwse")
             columns.append(label2)
-            label3 = ttk.Label(frame, text=self.productList[self.startingIndex][2])
-            label3.grid(row=self.startingIndex % self.iterator + 2, column=4, sticky="nwse")
+            label3 = ttk.Label(frame, text=self.productList[self.startingIndex][indexes[3]])
+            label3.grid(row=self.startingIndex % self.iterator + 2, column=3, sticky="nwse")
             columns.append(label3)
-            label4 = ttk.Label(frame, text=self.productList[self.startingIndex][3])
-            label4.grid(row=self.startingIndex % self.iterator + 2, column=3, sticky="nwse")
+            label4 = ttk.Label(frame, text=self.productList[self.startingIndex][indexes[4]])
+            label4.grid(row=self.startingIndex % self.iterator + 2, column=4, sticky="nwse")
             columns.append(label4)
-            label5 = ttk.Label(frame, text=self.productList[self.startingIndex][4])
-            label5.grid(row=self.startingIndex % self.iterator + 2, column=2, sticky="nwse")
-            columns.append(label5)
             displayButton = tk.Button(frame, image=self.displayIcon, relief=tk.SUNKEN, borderwidth=0,
                                       background=bgColor,
                                       activebackground=bgColor)
             displayButton.grid(row=self.startingIndex % self.iterator + 2, column=5, sticky="w")
             columns.append(displayButton)
+            editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+                                   activebackground=bgColor)
+            editButton.grid(row=self.startingIndex % self.iterator + 2, column=6, sticky="w")
+            columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                      activebackground=bgColor)
-            deleteButton.grid(row=self.startingIndex % self.iterator + 2, column=6, sticky="w")
+            deleteButton.grid(row=self.startingIndex % self.iterator + 2, column=7, sticky="w")
             columns.append(deleteButton)
             self.labels.append(columns)
 

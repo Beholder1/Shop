@@ -43,53 +43,21 @@ class MainProgram:
         frame3.grid(row=0, column=1, sticky="nwse")
         frame3.grid_propagate(False)
 
-        WidgetList(frame3, db)
+        products = ("0.Id", "1.Nazwa", "4.Producent", "3.Cena zakupu", "2.Cena sprzedaży")
+        WidgetList(frame3, db, "products", products)
 
         # Dostawy
         frame4 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
                           relief=tk.RIDGE)
         frame4.grid(row=0, column=1, sticky="nwse")
         frame4.grid_propagate(False)
-        buttonsFrame4 = tk.Frame(frame4)
-        buttonsFrame4.grid(row=0, column=0, sticky="w")
-        addButton = tk.Button(buttonsFrame4, image=addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                              activebackground=bgColor)
-        addButton.grid(row=0, column=0, sticky="w")
-        refreshButton = tk.Button(buttonsFrame4, image=refreshIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                  activebackground=bgColor)
-        refreshButton.grid(row=0, column=1, sticky="w")
-        frame4.grid_columnconfigure(0, weight=1)
-        frame4.grid_columnconfigure(1, weight=1)
-        frame4.grid_columnconfigure(2, weight=1)
-        frame4.grid_columnconfigure(3, weight=1)
-        frame4.grid_columnconfigure(4, weight=1)
-        ttk.Label(frame4, text="Id").grid(row=1, column=0, sticky="nwse")
-        ttk.Label(frame4, text="Data zamówienia").grid(row=1, column=1, sticky="nwse")
-        ttk.Label(frame4, text="Status").grid(row=1, column=2, sticky="nwse")
-        ttk.Label(frame4, text="Złożone przez").grid(row=1, column=3, sticky="nwse")
-        ttk.Label(frame4, text="Suma").grid(row=1, column=4, sticky="nwse")
-        # orderList=db.fetchAll("orders")
-        # for i in range(10):
-        #     ttk.Label(frame4, text=orderList[i][0]).grid(row=i+1,column=0, sticky="nwse")
-        #     ttk.Label(frame4, text=orderList[i][4]).grid(row=i+1,column=1, sticky="nwse")
-        #     ttk.Label(frame4, text=orderList[i][2]).grid(row=i+1,column=2, sticky="nwse")
-        #     ttk.Label(frame4, text=orderList[i][1]).grid(row=i+1,column=3, sticky="nwse")
-        #     ttk.Label(frame4, text=orderList[i][6]).grid(row=i+1,column=4, sticky="nwse")
-        #     displayButton=tk.Button(frame4, image=displayIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor, activebackground=bgColor)
-        #     displayButton.grid(row=i+1, column=5, sticky="w")
-        #     deleteButton = tk.Button(frame4, image=deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor, activebackground=bgColor)
-        #     deleteButton.grid(row=i+1, column=6, sticky="w")
 
         # Pracownicy
         frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame5.grid(row=0, column=1, sticky="nwse")
-        frame5a = tk.Frame(frame5, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-        frame5a.grid(row=0, column=0, sticky="nwse")
-        user.showUser(frame5a, self.show)
 
-        frame5b = tk.Frame(frame5, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-        frame5b.grid(row=0, column=1, sticky="nwse")
-        user.addUser(frame5b)
+        users = ("0.Id", "6.Imię", "7.Nazwisko", "8.Pensja", "11.Ostatnio zalogowany")
+        WidgetList(frame5, db, "users", users)
 
         frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
         frame1.grid(row=0, column=1, sticky="nwse")
