@@ -4,7 +4,8 @@ import mainProgram
 from db import Database
 import pyglet
 
-class Login():
+
+class Login:
     def __init__(self):
         db = Database()
         bgColor = "#39A5DC"
@@ -13,19 +14,17 @@ class Login():
         widgetWidth = 40
         pyglet.font.add_file('Roboto-Light.ttf')
 
-
         def combine(rootToDestroy, loginGet, passwordGet):
             if loginGet == '' or (loginGet == '' and passwordGet == ''):
                 errorLabel.configure(text="Nie podano nazwy użytkownika")
             elif passwordGet == '':
                 errorLabel.configure(text="Nie podano hasła")
             else:
-                if db.fetch("users", "login", loginGet)[3] == passwordGet:
+                if db.fetch("users", "login", loginGet)[2] == passwordGet:
                     rootToDestroy.destroy()
                     mainProgram.MainProgram(db, loginGet)
                 else:
                     errorLabel.configure(text="Niepoprawne hasło")
-
 
         root = tk.Tk()
         root.geometry("1280x720")
@@ -61,6 +60,6 @@ class Login():
 
         root.mainloop()
 
-if __name__=="__main__":
-    Login()
 
+if __name__ == "__main__":
+    Login()

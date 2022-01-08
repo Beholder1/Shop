@@ -1,4 +1,5 @@
 import psycopg2
+import random
 
 
 class Database:
@@ -20,7 +21,7 @@ class Database:
         self.cur = self.conn.cursor()
 
     def fetch(self, table, column, criterion):
-        self.cur.execute("SELECT * FROM " + table + " WHERE " + column + " = '" + criterion + "'")
+        self.cur.execute("SELECT * FROM " + table + " WHERE " + column + " = '" + str(criterion) + "'")
         data = self.cur.fetchone()
         return data
 
@@ -37,6 +38,19 @@ class Database:
             data[counter] = i[0]
             counter += 1
         return data
+
+    def insert(self, table, data):
+        command = "INSERT INTO " + table + " VALUES (default, '"
+        for column in data:
+            if column == "NULL":
+                command = command[:-1]
+                command += column + ", '"
+            else:
+                command += column
+                command += "', '"
+        command = command[:-3]
+        command += ")"
+        self.conn.commit()
 
     def insertUser(self, deptId, login, password, role, email, name, lastName, salary, pesel, createdOn, managerId):
         self.cur.execute("INSERT INTO users VALUES (default, " + str(
@@ -57,6 +71,41 @@ class Database:
             data[counter] = i[0]
             counter += 1
         return data
+
+    def fetchEmployeesAdmin(self, id):
+        self.cur.execute(
+            "select * from users where manager_id = " + str(
+                id) + "or user_id in (select user_id from users where "
+                      "manager_id in (select user_id from users where "
+                      "manager_id = " + str(id) + "))")
+        data = self.cur.fetchall()
+        return data
+
+    def tmp(self):
+        self.cur.execute("SELECT user_id, dept_id from users where rank='menedżer'")
+        menedzerowie = self.cur.fetchall()
+        self.cur.execute("SELECT user_id, dept_id from users where rank='pracownik'")
+        pracownicy = self.cur.fetchall()
+        gowno = []
+        for i in range(101):
+            gowno.append([])
+        for m in menedzerowie:
+            gowno[m[1]].append(m[0])
+        for i in range(101):
+            if gowno[i] == []:
+                gowno[i] = [i]
+        for p in pracownicy:
+            menedzer = random.choice(gowno[p[1]])
+            self.cur.execute("UPDATE users SET manager_id = " + str(menedzer) + " WHERE user_id = " + str(p[0]))
+            self.conn.commit()
+
+    def tmp1(self):
+        self.cur.execute("SELECT user_id, salary from users")
+        salary = self.cur.fetchall()
+        for s in salary:
+            n = round(s[1], 2)
+            self.cur.execute("UPDATE users SET salary = " + str(n) + " WHERE user_id = " + str(s[0]))
+            self.conn.commit()
 
     def disconnect(self):
         self.conn.close()

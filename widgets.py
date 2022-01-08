@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from main import Login
 import pyglet
+from user import User
 
 
 class AutocompleteCombobox(ttk.Combobox):
@@ -33,7 +34,7 @@ class AutocompleteCombobox(ttk.Combobox):
         # only allow cycling if we are in a known hit list
         if _hits == self._hits and self._hits:
             self._hit_index = (self._hit_index + delta) % len(self._hits)
-        # now finally perform the auto completion
+        # now finally perform the autocompletion
         if self._hits:
             self.delete(0, tk.END)
             self.insert(0, self._hits[self._hit_index])
@@ -213,6 +214,17 @@ class MessageBox:
                   command=lambda: close()).grid(row=0, column=1,
                                                 padx=15)
 
+class DisplayBox:
+    def __init__(self, object):
+        bgColor = "white"
+
+        self.root = tk.Tk()
+        self.root.configure(background=bgColor, borderwidth=1,
+                            relief=tk.RIDGE)
+        self.root.geometry("400x400")
+        ttk.Label(self.root, text=object, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+
+        self.root.resizable(False, False)
 
 class AddBox:
     def __init__(self, popButton, db):
@@ -225,9 +237,9 @@ class AddBox:
                     flag = False
             if flag:
                 popButton.config(state="normal")
-                db.insertProduct(self.entries[0].get(), self.entries[3].get(), self.entries[2].get(),
-                                 self.entries[1].get(), self.entries[4].get(), self.entries[5].get(),
-                                 self.entries[6].get())
+                db.insert("products", (self.entries[0].get(), self.entries[3].get(), self.entries[2].get(),
+                                       self.entries[1].get(), self.entries[4].get(), self.entries[5].get(),
+                                       self.entries[6].get()))
                 self.root.destroy()
 
         def close():
@@ -295,7 +307,7 @@ class AddBox:
 
 
 class WidgetList:
-    def __init__(self, frame, db, table, indexesNames):
+    def __init__(self, frame, db, table, indexesNames, user):
         self.addIcon = tk.PhotoImage(file='icons/add.png')
         self.refreshIcon = tk.PhotoImage(file='icons/refresh.png')
         self.displayIcon = tk.PhotoImage(file='icons/display.png')
@@ -305,28 +317,24 @@ class WidgetList:
         bgColor = '#FFFFFF'
 
         self.startingIndex = 0
-        self.productList = db.fetchAll(table)
+        if table == "users":
+            self.productList = db.fetchEmployeesAdmin(user.id)
+        else:
+            self.productList = db.fetchAll(table)
         self.productList.sort()
         self.iterator = 25
-        self.rangeEnd = self.iterator + self.startingIndex
+        if len(self.productList) < self.iterator:
+            self.rangeEnd = len(self.productList)
+        else:
+            self.rangeEnd = self.iterator + self.startingIndex
         self.labels = []
         self.choices = ("start", "backwards", "forwards", "end", "refresh")
 
         indexes = []
         names = []
         for i in indexesNames:
-            flag = False
-            index = ""
-            name = ""
-            for j in i:
-                if j == ".":
-                    flag = True
-                elif flag == False:
-                    index += j
-                elif flag == True:
-                    name += j
-            indexes.append(int(index))
-            names.append(name)
+            indexes.append(i[0])
+            names.append(i[1])
 
         buttonsFrame = tk.Frame(frame)
         buttonsFrame.grid(row=0, column=0, sticky="w")
@@ -350,7 +358,7 @@ class WidgetList:
                 self.rangeEnd = self.iterator
                 self.startingIndex = 0
             if choice == self.choices[4]:
-                self.productList = db.fetchAll("products")
+                self.productList = db.fetchAll(table)
                 self.productList.sort()
                 index -= self.iterator - 1
             counter = index
@@ -396,7 +404,7 @@ class WidgetList:
             columns.append(label4)
             displayButton = tk.Button(frame, image=self.displayIcon, relief=tk.SUNKEN, borderwidth=0,
                                       background=bgColor,
-                                      activebackground=bgColor)
+                                      activebackground=bgColor, command=lambda: DisplayBox(User(self.productList[self.startingIndex][indexes[0]], db)))
             displayButton.grid(row=self.startingIndex % self.iterator + 2, column=5, sticky="w")
             columns.append(displayButton)
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,

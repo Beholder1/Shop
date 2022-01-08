@@ -1,25 +1,39 @@
 import tkinter as tk
 from tkinter import ttk
-from widgets import AutocompleteCombobox
+#from widgets import AutocompleteCombobox
 from datetime import datetime
 
 
+def createLogin(name, lastName):
+    if len(name) > 3:
+        login = name[:-(len(name) - 3)]
+    else:
+        login = name
+    if len(lastName) > 3:
+        login = login + lastName[:-(len(lastName) - 3)]
+    else:
+        login = login + lastName
+    return login
+
+
 class User:
-    def __init__(self, login, db):
+    def __init__(self, id, db):
         self.db = db
-        self.login = login
-        [self.id,
+        self.id = id
+        [self.login,
          self.dept_id,
          self.password,
          self.role,
          self.email,
+         self.phoneNumber,
          self.name,
          self.last_name,
          self.salary,
          self.pesel,
          self.creationDate,
          self.lastLogin,
-         self.employerId] = [self.db.fetch("users", "login", login)[i] for i in (0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)]
+         self.isBlocked,
+         self.employerId] = [self.db.fetch("users", "login", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
 
     def showUser(self, frame, show):
         ttk.Label(frame, text="Pracownik: ").grid(row=0, column=0, sticky="w")
@@ -55,8 +69,8 @@ class User:
 
         addEmployeeButton = tk.Button(frame, text="Dodaj",
                                       command=lambda: self.db.insertUser(self.dept_id,
-                                                                         self.createLogin(entryEmployeeName.get(),
-                                                                                          entryEmployeeLastName.get()),
+                                                                         createLogin(entryEmployeeName.get(),
+                                                                                     entryEmployeeLastName.get()),
                                                                          entryEmployeePesel.get(), "pracownik",
                                                                          entryEmployeeEmail.get(),
                                                                          entryEmployeeName.get(),
@@ -65,17 +79,6 @@ class User:
                                                                          entryEmployeePesel.get(), datetime.now(),
                                                                          self.id))
         addEmployeeButton.grid(row=5, column=1)
-
-    def createLogin(self, name, lastName):
-        if len(name) > 3:
-            login = name[:-(len(name) - 3)]
-        else:
-            login = name
-        if len(lastName) > 3:
-            login = login + lastName[:-(len(lastName) - 3)]
-        else:
-            login = login + lastName
-        return login
 
     def __str__(self):
         return "Login: " + str(self.login) + "\n" + \
