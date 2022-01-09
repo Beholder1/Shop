@@ -33,7 +33,7 @@ class User:
          self.creationDate,
          self.lastLogin,
          self.isBlocked,
-         self.employerId] = [self.db.fetch("users", "login", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
+         self.employerId] = [self.db.fetch("users", "user_id", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
 
     def showUser(self, frame, show):
         ttk.Label(frame, text="Pracownik: ").grid(row=0, column=0, sticky="w")

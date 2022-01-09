@@ -25,8 +25,18 @@ class Database:
         data = self.cur.fetchone()
         return data
 
-    def fetchAll(self, table):
-        self.cur.execute("SELECT * FROM " + table)
+    def fetchAll(self, table, columns, **kwargs):
+        command = "SELECT "
+        for column in columns:
+            command += column
+            command += ", "
+        command = command[:-2]
+        command += " FROM "
+        command += table
+        for key, item in kwargs.items():
+            if key == "add":
+                command += " " + item
+        self.cur.execute(command)
         data = self.cur.fetchall()
         return data
 
@@ -72,12 +82,16 @@ class Database:
             counter += 1
         return data
 
-    def fetchEmployeesAdmin(self, id):
-        self.cur.execute(
-            "select * from users where manager_id = " + str(
-                id) + "or user_id in (select user_id from users where "
-                      "manager_id in (select user_id from users where "
-                      "manager_id = " + str(id) + "))")
+    def fetchEmployeesAdmin(self, id, columns):
+        command = "SELECT "
+        for column in columns:
+            command += column
+            command += ", "
+        command = command[:-2]
+        command += " FROM users where manager_id = " + str(
+            id) + "or user_id in (select user_id from users where manager_id in (select user_id from users where manager_id = " + str(
+            id) + "))"
+        self.cur.execute(command)
         data = self.cur.fetchall()
         return data
 
