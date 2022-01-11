@@ -43,7 +43,8 @@ class MainProgram:
             frame3.grid_propagate(False)
 
             products = ("Id", "Nazwa", "Producent", "Cena zakupu", "Cena sprzedaży")
-            WidgetList(frame3, db, "products", ("product_id", "name", "marks.mark", "purchase_price", "price"), products,
+            WidgetList(frame3, db, "products", ("product_id", "name", "marks.mark", "purchase_price", "price"),
+                       products,
                        user, add="INNER JOIN marks USING (mark_id)")
 
             # Dostawy
@@ -53,21 +54,30 @@ class MainProgram:
             frame4.grid_propagate(False)
 
             orders = ("Id", "Status", "Data złożenia", "Data dostarczenia", "Użytkownik")
-            WidgetList(frame4, db, "orders", ("order_id", "order_status", "order_date", "delivery_date", "users.login"), orders,
-                       user, add="INNER JOIN users USING (user_id)")
+            WidgetList(frame4, db, "orders", ("order_id", "order_status", "order_date", "delivery_date", "users.login"),
+                       orders, user, add="INNER JOIN users USING (user_id)")
+
+            # Zamówienia
+            frame5 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
+                              relief=tk.RIDGE)
+            frame5.grid(row=0, column=1, sticky="nwse")
+            frame5.grid_propagate(False)
+            cart = ("Id", "Data złożenia", "Status", "Pracownik", "Klient")
+            WidgetList(frame5, db, "carts", ("cart_id", "purchase_date", "order_status", "users.login", "client_id"),
+                       cart, user, add="INNER JOIN users USING (user_id)")
 
             # Pracownicy
-            frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-            frame5.grid(row=0, column=1, sticky="nwse")
+            frame6 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+            frame6.grid(row=0, column=1, sticky="nwse")
 
             users = ("Id", "Imię", "Nazwisko", "Pensja", "Ostatnio zalogowany")
-            WidgetList(frame5, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user)
+            WidgetList(frame6, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user)
 
             frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame1.grid(row=0, column=1, sticky="nwse")
             ttk.Label(frame1, text="Witaj, " + user.name, font=('Roboto Light', 40)).grid(row=0, column=0, padx=10)
 
-            SidebarMenu(root, frame1, frame2, frame3, frame4, frame5, user, db)
+            SidebarMenu(root, frame1, frame2, frame3, frame4, frame5, frame6, user, db)
             root.grid_columnconfigure(1, weight=1)
             root.mainloop()
 

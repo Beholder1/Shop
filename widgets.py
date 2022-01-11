@@ -58,13 +58,14 @@ class AutocompleteCombobox(ttk.Combobox):
 
 
 class SidebarMenu:
-    def __init__(self, root, frame1, frame2, frame3, frame4, frame5, user, db):
+    def __init__(self, root, frame1, frame2, frame3, frame4, frame5, frame6, user, db):
         menuIcon = tk.PhotoImage(file='icons/menu.png')
         closeIcon = tk.PhotoImage(file='icons/close.png')
         homeIcon = tk.PhotoImage(file='icons/home.png')
         accountIcon = tk.PhotoImage(file='icons/account.png')
         productIcon = tk.PhotoImage(file='icons/product.png')
-        locationIcon = tk.PhotoImage(file='icons/delivery.png')
+        deliveryIcon = tk.PhotoImage(file='icons/delivery.png')
+        orderIcon = tk.PhotoImage(file='icons/order.png')
         employeesIcon = tk.PhotoImage(file='icons/employees.png')
         logoutIcon = tk.PhotoImage(file='icons/logout.png')
 
@@ -81,7 +82,7 @@ class SidebarMenu:
         def expand():
             rep = root.after(2, expand)
             if not self.expanded:
-                self.cur_width += 10
+                self.cur_width += 100
                 frame.config(width=self.cur_width)
             if self.cur_width >= max_w:
                 self.expanded = True
@@ -89,7 +90,7 @@ class SidebarMenu:
                 fill()
 
         def contract():
-            self.cur_width -= 10
+            self.cur_width -= 100
             rep = root.after(2, contract)
             frame.config(width=self.cur_width)
             if self.cur_width <= min_w:
@@ -106,8 +107,10 @@ class SidebarMenu:
                 accountButton.grid_configure(pady=0)
                 productButton.config(image="", text="Produkty", borderwidth=0)
                 productButton.grid_configure(pady=0)
-                locationButton.config(image="", text="Dostawy", borderwidth=0)
-                locationButton.grid_configure(pady=0)
+                deliveryButton.config(image="", text="Dostawy", borderwidth=0)
+                deliveryButton.grid_configure(pady=0)
+                orderButton.config(image="", text="Zamówienia", borderwidth=0)
+                orderButton.grid_configure(pady=0)
                 logoutButton.config(image="", text="Wyloguj", borderwidth=0)
                 logoutButton.grid_configure(pady=0)
                 if user.role != "pracownik":
@@ -121,8 +124,10 @@ class SidebarMenu:
                 accountButton.grid_configure(pady=5)
                 productButton.config(image=productIcon, borderwidth=0)
                 productButton.grid_configure(pady=5)
-                locationButton.config(image=locationIcon, borderwidth=0)
-                locationButton.grid_configure(pady=5)
+                deliveryButton.config(image=deliveryIcon, borderwidth=0)
+                deliveryButton.grid_configure(pady=5)
+                orderButton.config(image=orderIcon, borderwidth=0)
+                orderButton.grid_configure(pady=5)
                 logoutButton.config(image=logoutIcon, borderwidth=0)
                 logoutButton.grid_configure(pady=5)
                 if user.role != "pracownik":
@@ -152,10 +157,14 @@ class SidebarMenu:
                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                   activebackground=menuColor, command=lambda: frame3.tkraise())
         productButton.grid(row=4, column=0, pady=5, sticky='nwe')
-        locationButton = tk.Button(frame, image=locationIcon, background=menuColor, fg=fontColor,
+        deliveryButton = tk.Button(frame, image=deliveryIcon, background=menuColor, fg=fontColor,
                                    font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                    activebackground=menuColor, command=lambda: frame4.tkraise())
-        locationButton.grid(row=5, column=0, pady=5, sticky='nwe')
+        deliveryButton.grid(row=5, column=0, pady=5, sticky='nwe')
+        orderButton = tk.Button(frame, image=orderIcon, background=menuColor, fg=fontColor,
+                                font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
+                                activebackground=menuColor, command=lambda: frame5.tkraise())
+        orderButton.grid(row=6, column=0, pady=5, sticky='nwe')
 
         def logout():
             root.destroy()
@@ -171,11 +180,11 @@ class SidebarMenu:
         if user.role != "pracownik":
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
                                         font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                        activebackground=menuColor, command=lambda: frame5.tkraise())
-            employeesButton.grid(row=6, column=0, pady=5, sticky='nwe')
-            logoutButton.grid(row=7, column=0, pady=5, sticky='nwe')
+                                        activebackground=menuColor, command=lambda: frame6.tkraise())
+            employeesButton.grid(row=7, column=0, pady=5, sticky='nwe')
+            logoutButton.grid(row=8, column=0, pady=5, sticky='nwe')
         else:
-            logoutButton.grid(row=6, column=0, pady=5, sticky='nwe')
+            logoutButton.grid(row=7, column=0, pady=5, sticky='nwe')
 
         frame.grid_propagate(False)
 
@@ -228,14 +237,14 @@ class OnlyMessageBox:
 
 
 class DisplayBox:
-    def __init__(self, object):
+    def __init__(self, objectToDisplay):
         bgColor = "white"
 
         self.root = tk.Tk()
         self.root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
         self.root.geometry("400x400")
-        ttk.Label(self.root, text=object, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        ttk.Label(self.root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
 
         self.root.resizable(False, False)
 
@@ -327,6 +336,10 @@ class WidgetList:
         self.displayIcon = tk.PhotoImage(file='icons/display.png')
         self.editIcon = tk.PhotoImage(file='icons/edit.png')
         self.deleteIcon = tk.PhotoImage(file='icons/delete.png')
+        self.startIcon = tk.PhotoImage(file="icons/start.png")
+        self.finishIcon = tk.PhotoImage(file="icons/finish.png")
+        self.forwardsIcon = tk.PhotoImage(file="icons/forwards.png")
+        self.backwardsIcon = tk.PhotoImage(file="icons/backwards.png")
 
         bgColor = '#FFFFFF'
 
@@ -346,16 +359,16 @@ class WidgetList:
         else:
             self.rangeEnd = self.iterator + self.startingIndex
         self.labels = []
-        self.choices = ("start", "backwards", "forwards", "end", "refresh")
+        self.choices = ("start", "backwards", "forwards", "end", "refresh", "sort")
 
         self.sortingMethod = 0
         self.reverse = False
 
-        buttonsFrame = tk.Frame(frame)
+        buttonsFrame = tk.Frame(frame, background=bgColor)
         buttonsFrame.grid(row=0, column=0, sticky="w")
         addButton = tk.Button(buttonsFrame, image=self.addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                               activebackground=bgColor, command=lambda: AddBox(addButton, db))
-        addButton.grid(row=0, column=0, sticky="w")
+        addButton.grid(row=0, column=0, sticky="w", padx=(10, 0))
         refreshButton = tk.Button(buttonsFrame, image=self.refreshIcon, relief=tk.SUNKEN, borderwidth=0,
                                   background=bgColor,
                                   activebackground=bgColor,
@@ -365,31 +378,13 @@ class WidgetList:
             frame.grid_columnconfigure(i, weight=1)
 
         sortButtons = []
-        button0 = tk.Button(frame, text=names[0], font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                            background=bgColor,
-                            activebackground=bgColor, command=lambda: sort(names[0]))
-        button0.grid(row=1, column=0, sticky="w")
-        sortButtons.append(button0)
-        button1 = tk.Button(frame, text=names[1], font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                            background=bgColor,
-                            activebackground=bgColor, command=lambda: sort(names[1]))
-        button1.grid(row=1, column=1, sticky="w")
-        sortButtons.append(button1)
-        button2 = tk.Button(frame, text=names[2], font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                            background=bgColor,
-                            activebackground=bgColor, command=lambda: sort(names[2]))
-        button2.grid(row=1, column=2, sticky="w")
-        sortButtons.append(button2)
-        button3 = tk.Button(frame, text=names[3], font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                            background=bgColor,
-                            activebackground=bgColor, command=lambda: sort(names[3]))
-        button3.grid(row=1, column=3, sticky="w")
-        sortButtons.append(button3)
-        button4 = tk.Button(frame, text=names[4], font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                            background=bgColor,
-                            activebackground=bgColor, command=lambda: sort(names[4]))
-        button4.grid(row=1, column=4, sticky="w")
-        sortButtons.append(button4)
+        for name in names:
+            button = tk.Button(frame, text=name, font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
+                               background=bgColor,
+                               activebackground=bgColor, command=lambda: sort(name))
+            button.grid(row=1, column=names.index(name), sticky="w")
+            sortButtons.append(button)
+        sortButtons[0].grid_configure(padx=(7, 0))
 
         def sort(name):
             index = names.index(name)
@@ -407,9 +402,11 @@ class WidgetList:
                 if self.reverse:
                     self.reverse = not self.reverse
                 self.itemList.sort(key=lambda x: x[index])
-            configureWidgets(self.startingIndex - self.iterator + 1, "")
+            configureWidgets(self.startingIndex - self.iterator + 1, "sort")
 
         def configureWidgets(index, choice):
+            if index < 0 and choice == "sort":
+                index = 0
             if (index >= len(self.itemList)) and choice == self.choices[2]:
                 index = 0
                 self.rangeEnd = self.iterator
@@ -445,7 +442,7 @@ class WidgetList:
         for self.startingIndex in range(self.rangeEnd):
             columns = []
             label0 = ttk.Label(frame, text=self.itemList[self.startingIndex][0])
-            label0.grid(row=self.startingIndex % self.iterator + 2, column=0, sticky="nwse")
+            label0.grid(row=self.startingIndex % self.iterator + 2, column=0, sticky="nwse", padx=(10, 0))
             columns.append(label0)
             label1 = ttk.Label(frame, text=self.itemList[self.startingIndex][1])
             label1.grid(row=self.startingIndex % self.iterator + 2, column=1, sticky="nwse")
@@ -476,49 +473,61 @@ class WidgetList:
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                      activebackground=bgColor)
-            deleteButton.grid(row=self.startingIndex % self.iterator + 2, column=7, sticky="w")
+            deleteButton.grid(row=self.startingIndex % self.iterator + 2, column=7, sticky="w", padx=(0, 10))
             columns.append(deleteButton)
             self.labels.append(columns)
 
         if len(self.itemList) > self.iterator:
-            pageButtonsFrame3 = tk.Frame(frame)
-            pageButtonsFrame3.grid(row=self.startingIndex % self.iterator + 3, column=0, sticky="w")
-            previousPageButton = tk.Button(pageButtonsFrame3, text="|<", relief=tk.SUNKEN, borderwidth=0,
-                                           background=bgColor,
-                                           activebackground=bgColor,
-                                           command=lambda: configureWidgets(0, self.choices[0]))
-            previousPageButton.grid(row=0, column=0, sticky="w")
-            previousPageButton = tk.Button(pageButtonsFrame3, text="<", relief=tk.SUNKEN, borderwidth=0,
+            pageButtonsFrame3 = tk.Frame(frame, background=bgColor)
+            pageButtonsFrame3.grid(row=self.startingIndex % self.iterator + 3, column=0, sticky="w", padx=(8, 0))
+            firstPageButton = tk.Button(pageButtonsFrame3, image=self.startIcon, relief=tk.SUNKEN, borderwidth=0,
+                                        background=bgColor,
+                                        activebackground=bgColor,
+                                        command=lambda: configureWidgets(0, self.choices[0]))
+            firstPageButton.grid(row=0, column=0, sticky="w")
+            previousPageButton = tk.Button(pageButtonsFrame3, image=self.backwardsIcon, relief=tk.SUNKEN, borderwidth=0,
                                            background=bgColor,
                                            activebackground=bgColor,
                                            command=lambda: configureWidgets(self.rangeEnd - 2 * self.iterator,
                                                                             self.choices[1]))
             previousPageButton.grid(row=0, column=1, sticky="w")
-            page1Button = tk.Button(pageButtonsFrame3, text="1", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            page1Button = tk.Button(pageButtonsFrame3, text="1", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page1Button.grid(row=0, column=2, sticky="w")
-            page2Button = tk.Button(pageButtonsFrame3, text="2", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            page2Button = tk.Button(pageButtonsFrame3, text="2", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page2Button.grid(row=0, column=3, sticky="w")
-            page3Button = tk.Button(pageButtonsFrame3, text="3", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            page3Button = tk.Button(pageButtonsFrame3, text="3", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page3Button.grid(row=0, column=4, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="5", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            ttk.Label(pageButtonsFrame3, text="4", font=("Roboto Light", 10, "bold", "underline")).grid(row=0,
+                                                                                                        column=5,
+                                                                                                        sticky="w",
+                                                                                                        pady=(1, 0))
+            page5Button = tk.Button(pageButtonsFrame3, text="5", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
-            page4Button.grid(row=0, column=5, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="6", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            page5Button.grid(row=0, column=6, sticky="w")
+            page6Button = tk.Button(pageButtonsFrame3, text="6", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
-            page4Button.grid(row=0, column=6, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text="7", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
+            page6Button.grid(row=0, column=7, sticky="w")
+            page7Button = tk.Button(pageButtonsFrame3, text="7", font=("Roboto Light", 10), relief=tk.SUNKEN,
+                                    borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
-            page4Button.grid(row=0, column=7, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text=">", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor,
-                                    command=lambda: configureWidgets(self.rangeEnd, self.choices[2]))
-            page4Button.grid(row=0, column=8, sticky="w")
-            page4Button = tk.Button(pageButtonsFrame3, text=">|", relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                    activebackground=bgColor,
-                                    command=lambda: configureWidgets(
-                                        len(self.itemList) - self.iterator + len(self.itemList) % self.iterator,
-                                        self.choices[3]))
-            page4Button.grid(row=0, column=9, sticky="w")
+            page7Button.grid(row=0, column=8, sticky="w")
+            nextPageButton = tk.Button(pageButtonsFrame3, image=self.forwardsIcon, relief=tk.SUNKEN, borderwidth=0,
+                                       background=bgColor,
+                                       activebackground=bgColor,
+                                       command=lambda: configureWidgets(self.rangeEnd, self.choices[2]))
+            nextPageButton.grid(row=0, column=9, sticky="w")
+            lastPageButton = tk.Button(pageButtonsFrame3, image=self.finishIcon, relief=tk.SUNKEN, borderwidth=0,
+                                       background=bgColor,
+                                       activebackground=bgColor,
+                                       command=lambda: configureWidgets(
+                                           len(self.itemList) - self.iterator + len(self.itemList) % self.iterator,
+                                           self.choices[3]))
+            lastPageButton.grid(row=0, column=10, sticky="w")
