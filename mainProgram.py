@@ -4,6 +4,7 @@ from user import User
 from product import Product
 from widgets import AutocompleteCombobox, SidebarMenu, WidgetList, OnlyMessageBox
 import pyglet
+from datetime import datetime
 
 
 class MainProgram:
@@ -11,6 +12,7 @@ class MainProgram:
         self.db = db
         self.login = login
         db.fetch("users", "login", self.login)
+        db.set("users", "last_login", str(datetime.now()), "user_id", str(db.fetch("users", "login", self.login)[0]))
         user = User(self.login, self.db)
 
         if user.isBlocked:

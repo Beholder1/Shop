@@ -95,6 +95,16 @@ class Database:
         data = self.cur.fetchall()
         return data
 
+    def set(self, table, column, value, criterionColumn, criterionValue):
+        self.cur.execute(
+            "UPDATE " + table + " SET " + column + " = '" + value + "' WHERE " + criterionColumn + " = '" + criterionValue + "'")
+        self.conn.commit()
+
+    def delete(self, table, column, value):
+        self.cur.execute(
+            "DELETE FROM " + table + " WHERE " + column + " = '" + value + "'")
+        self.conn.commit()
+
     def tmp(self):
         self.cur.execute("SELECT user_id, dept_id from users where rank='menedżer'")
         menedzerowie = self.cur.fetchall()
@@ -106,7 +116,7 @@ class Database:
         for m in menedzerowie:
             gowno[m[1]].append(m[0])
         for i in range(101):
-            if gowno[i] == []:
+            if not gowno[i]:
                 gowno[i] = [i]
         for p in pracownicy:
             menedzer = random.choice(gowno[p[1]])
