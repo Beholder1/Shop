@@ -73,7 +73,7 @@ class SidebarMenu:
         menuColor = '#0589CF'
         fontColor = 'black'
         min_w = 50
-        max_w = 150
+        max_w = 130
         self.cur_width = min_w
         self.expanded = False
 
@@ -83,7 +83,7 @@ class SidebarMenu:
         def expand():
             rep = root.after(2, expand)
             if not self.expanded:
-                self.cur_width += 100
+                self.cur_width += 80
                 frame.config(width=self.cur_width)
             if self.cur_width >= max_w:
                 self.expanded = True
@@ -91,7 +91,7 @@ class SidebarMenu:
                 fill()
 
         def contract():
-            self.cur_width -= 100
+            self.cur_width -= 80
             rep = root.after(2, contract)
             frame.config(width=self.cur_width)
             if self.cur_width <= min_w:
@@ -483,6 +483,9 @@ class WidgetList:
                     "Czy na pewno chcesz usunąć element o id = " + idToPass + "?", deleteButton,
                     lambda: db.delete(table, columnNames[0], idToPass)))
             deleteButton.grid(row=row, column=7, sticky="nwse", padx=(0, 10))
+            if row%2 != 0:
+                for column in columns:
+                    column.configure(background="#d8edf8")
             columns.append(deleteButton)
             self.labels.append(columns)
 

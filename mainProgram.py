@@ -64,9 +64,9 @@ class MainProgram:
                               relief=tk.RIDGE)
             frame5.grid(row=0, column=1, sticky="nwse")
             frame5.grid_propagate(False)
-            cart = ("Id", "Data złożenia", "Status", "Pracownik", "Klient")
-            WidgetList(frame5, db, "carts", ("cart_id", "purchase_date", "order_status", "users.login", "client_id"),
-                       cart, user, add="INNER JOIN users USING (user_id)")
+            cart = ("Id", "Data złożenia", "Status", "Pracownik", "Użytkownik")
+            WidgetList(frame5, db, "carts", ("cart_id", "purchase_date", "order_status", "login", "concat(clients.first_name, ' ', clients.last_name)"),
+                       cart, user, add="INNER JOIN users USING (user_id) INNER JOIN clients USING (client_id)")
 
             # Pracownicy
             frame6 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
