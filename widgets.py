@@ -3,6 +3,9 @@ from tkinter import ttk
 from main import Login
 import pyglet
 from user import User
+from product import Product
+from order import Order
+from cart import Cart
 from tkinter import Canvas
 
 
@@ -69,6 +72,8 @@ class SidebarMenu:
         orderIcon = tk.PhotoImage(file='icons/order.png')
         employeesIcon = tk.PhotoImage(file='icons/employees.png')
         logoutIcon = tk.PhotoImage(file='icons/logout.png')
+
+        self.currentFrame = frame1
 
         menuColor = '#0589CF'
         fontColor = 'black'
@@ -145,26 +150,33 @@ class SidebarMenu:
             activebackground=menuColor,
             command=lambda: expand()
         )
+
+        def changeFrame(frameNew):
+            # self.currentFrame.grid_forget()
+            # frameNew.grid_configure(row=0, column=1, sticky="nwse")
+            # self.currentFrame = frameNew
+            frameNew.tkraise()
+
         menuButton.grid(row=1, column=0, pady=5, padx=(10, 10), sticky='nw')
         homeButton = tk.Button(frame, image=homeIcon, background=menuColor, fg=fontColor,
                                font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                               activebackground=menuColor, command=lambda: frame1.tkraise())
+                               activebackground=menuColor, command=lambda: changeFrame(frame1))
         homeButton.grid(row=2, column=0, pady=5, sticky='nwe')
         accountButton = tk.Button(frame, image=accountIcon, background=menuColor, fg=fontColor,
                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: frame2.tkraise())
+                                  activebackground=menuColor, command=lambda: changeFrame(frame2))
         accountButton.grid(row=3, column=0, pady=5, sticky='nwe')
         productButton = tk.Button(frame, image=productIcon, background=menuColor, fg=fontColor,
                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: frame3.tkraise())
+                                  activebackground=menuColor, command=lambda: changeFrame(frame3))
         productButton.grid(row=4, column=0, pady=5, sticky='nwe')
         deliveryButton = tk.Button(frame, image=deliveryIcon, background=menuColor, fg=fontColor,
                                    font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                   activebackground=menuColor, command=lambda: frame4.tkraise())
+                                   activebackground=menuColor, command=lambda: changeFrame(frame4))
         deliveryButton.grid(row=5, column=0, pady=5, sticky='nwe')
         orderButton = tk.Button(frame, image=orderIcon, background=menuColor, fg=fontColor,
                                 font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                activebackground=menuColor, command=lambda: frame5.tkraise())
+                                activebackground=menuColor, command=lambda: changeFrame(frame5))
         orderButton.grid(row=6, column=0, pady=5, sticky='nwe')
 
         def logout():
@@ -181,7 +193,7 @@ class SidebarMenu:
         if user.role != "pracownik":
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
                                         font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                        activebackground=menuColor, command=lambda: frame6.tkraise())
+                                        activebackground=menuColor, command=lambda: changeFrame(frame6))
             employeesButton.grid(row=7, column=0, pady=5, sticky='nwe')
             logoutButton.grid(row=8, column=0, pady=5, sticky='nwe')
         else:
@@ -225,6 +237,38 @@ class MessageBox:
                                                 padx=15)
 
 
+class Boxes:
+    def __init__(self, db):
+        self.db = db
+
+    def accountConfigureBox(self, id, column, popButton):
+        def edit():
+            if entry0.get() == entry1.get():
+                self.db.set("users", column, entry0.get(), "user_id", id)
+                close()
+
+        def close():
+            root.destroy()
+            popButton.config(state="normal")
+
+        popButton.config(state="disabled")
+
+        bgColor = "white"
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
+                            relief=tk.RIDGE)
+        root.geometry("400x400")
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+
+        ttk.Label(root, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        entry0 = ttk.Entry(root)
+        entry0.grid(row=0, column=1)
+        ttk.Label(root, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
+        entry1 = ttk.Entry(root)
+        entry1.grid(row=1, column=1)
+        tk.Button(root, text="Zatwierdź", command=edit).grid(row=2, column=1)
+
+
 class OnlyMessageBox:
     def __init__(self, text):
         bgColor = "white"
@@ -238,7 +282,17 @@ class OnlyMessageBox:
 
 
 class DisplayBox:
-    def __init__(self, objectToDisplay):
+    def __init__(self, db, name, id):
+        objectToDisplay = ""
+        if name == "products":
+            objectToDisplay = Product(db, id)
+        elif name == "users":
+            objectToDisplay = User(db, id)
+        elif name == "orders":
+            objectToDisplay = Order(db, id)
+        elif name == "carts":
+            objectToDisplay = Cart(db, id)
+
         bgColor = "white"
 
         self.root = tk.Tk()
@@ -331,7 +385,7 @@ class AddBox:
 
 
 class WidgetList:
-    def __init__(self, frame, db, table, columnNames, names, user, **kwargs):
+    def __init__(self, framePassed, db, table, columnNames, names, user, title, **kwargs):
         self.addIcon = tk.PhotoImage(file='icons/add.png')
         self.refreshIcon = tk.PhotoImage(file='icons/refresh.png')
         self.displayIcon = tk.PhotoImage(file='icons/display.png')
@@ -342,7 +396,12 @@ class WidgetList:
         self.forwardsIcon = tk.PhotoImage(file="icons/forwards.png")
         self.backwardsIcon = tk.PhotoImage(file="icons/backwards.png")
 
+        framePassed.grid_columnconfigure(0, weight=1)
         bgColor = '#FFFFFF'
+        ttk.Label(framePassed, text=title, font=("Roboto Light", 25, "bold"), foreground="#0589CF").grid(row=0,
+                                                                                                         column=0)
+        frame = tk.Frame(framePassed, background=bgColor)
+        frame.grid(row=1, column=0, sticky="nwse")
 
         addition = ""
         self.startingIndex = 0
@@ -424,7 +483,7 @@ class WidgetList:
             for widget in self.labels:
                 for label in range(5):
                     widget[label].configure(text=self.itemList[counter][label])
-                widget[5].configure()
+                widget[5].configure(command=lambda idToPass=widget[0].cget("text"): DisplayBox(db, table, idToPass))
                 widget[6].configure()
                 widget[7].configure()
                 counter += 1
@@ -448,19 +507,19 @@ class WidgetList:
             row = self.startingIndex % self.iterator + 2
             columns = []
             label0 = ttk.Label(frame, text=self.itemList[self.startingIndex][0])
-            label0.grid(row=row, column=0, sticky="nwse", padx=(10, 0))
+            label0.grid(row=row, column=0, sticky="we", padx=(10, 0))
             columns.append(label0)
             label1 = ttk.Label(frame, text=self.itemList[self.startingIndex][1])
-            label1.grid(row=row, column=1, sticky="nwse")
+            label1.grid(row=row, column=1, sticky="we")
             columns.append(label1)
             label2 = ttk.Label(frame, text=self.itemList[self.startingIndex][2])
-            label2.grid(row=row, column=2, sticky="nwse")
+            label2.grid(row=row, column=2, sticky="we")
             columns.append(label2)
             label3 = ttk.Label(frame, text=self.itemList[self.startingIndex][3])
-            label3.grid(row=row, column=3, sticky="nwse")
+            label3.grid(row=row, column=3, sticky="we")
             columns.append(label3)
             label4 = ttk.Label(frame, text=self.itemList[self.startingIndex][4])
-            label4.grid(row=row, column=4, sticky="nwse")
+            label4.grid(row=row, column=4, sticky="we")
             columns.append(label4)
             if table == "users":
                 isBlocked = db.fetch(table, "user_id", self.itemList[self.startingIndex][0])[12]
@@ -470,7 +529,7 @@ class WidgetList:
             displayButton = tk.Button(frame, image=self.displayIcon, relief=tk.SUNKEN, borderwidth=0,
                                       background=bgColor,
                                       activebackground=bgColor,
-                                      command=lambda: DisplayBox(User(self.itemList[self.startingIndex][0], db)))
+                                      command=lambda idToPass=self.itemList[self.startingIndex][0]: DisplayBox(db, table, idToPass))
             displayButton.grid(row=row, column=5, sticky="nwse")
             columns.append(displayButton)
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
@@ -479,14 +538,15 @@ class WidgetList:
             columns.append(editButton)
             idForButton = str(columns[0].cget("text"))
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                                     activebackground=bgColor, command=lambda idToPass=idForButton: MessageBox(
-                    "Czy na pewno chcesz usunąć element o id = " + idToPass + "?", deleteButton,
-                    lambda: db.delete(table, columnNames[0], idToPass)))
+                                     activebackground=bgColor)
+            deleteButton.configure(command=lambda idToPass=idForButton, thisButton=deleteButton: MessageBox(
+                "Czy na pewno chcesz usunąć element o id = " + idToPass + "?", thisButton,
+                lambda: db.delete(table, columnNames[0], idToPass)))
             deleteButton.grid(row=row, column=7, sticky="nwse", padx=(0, 10))
-            if row%2 != 0:
+            columns.append(deleteButton)
+            if row % 2 != 0:
                 for column in columns:
                     column.configure(background="#d8edf8")
-            columns.append(deleteButton)
             self.labels.append(columns)
 
         if len(self.itemList) > self.iterator:

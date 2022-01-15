@@ -17,7 +17,7 @@ def createLogin(name, lastName):
 
 
 class User:
-    def __init__(self, id, db):
+    def __init__(self, db, id):
         self.db = db
         self.id = id
         [self.login,
@@ -85,5 +85,6 @@ class User:
                "Imię: " + str(self.name) + "\n" + \
                "Nazwisko: " + str(self.last_name) + "\n" + \
                "Email: " + str(self.email) + "\n" + \
+               "Telefon: " + str(self.phoneNumber) + "\n" + \
                "Pensja: " + str(self.salary) + "\n" + \
                "Konto utworzone: " + str(self.creationDate)

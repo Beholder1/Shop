@@ -2,18 +2,25 @@ from db import Database
 
 
 class Product:
-    def __init__(self, name, brand):
-        db = Database()
-        self.name = name
-        self.brand = brand
-        [self.id,
+    def __init__(self, db, id):
+        self.id = id
+        [self.name,
          self.price,
+         self.purchasePrice,
+         self.unit,
+         self.taxRate,
          self.category,
-         self.unit] = [db.fetch("products", "name", name)[i] for i in (0, 1, 3, 4)]
+         self.brand] = [
+            db.fetchAll("products", ("name", "price", "purchase_price", "amount_type", "tax_rate", "category", "mark"),
+                        add="INNER JOIN tax_rates USING (tax_rate_id) INNER JOIN categories USING (category_id) INNER JOIN marks USING (mark_id) WHERE product_id = " + str(
+                            id))[0][
+                i] for i in range(7)]
 
     def __str__(self):
         return "Nazwa: " + str(self.name) + "\n" + \
                "Producent: " + str(self.brand) + "\n" + \
-               "Cena: " + str(self.price) + "zł\n" + \
+               "Cena zakupu: " + str(self.purchasePrice) + "zł\n" + \
+               "Cena sprzedaży: " + str(self.price) + "zł\n" + \
+               "Podatek: " + str(self.taxRate) + "\n" + \
                "Kategoria: " + str(self.category) + "\n" + \
                "Jednostka: " + str(self.unit)
