@@ -20,8 +20,12 @@ class Database:
             port=port_id)
         self.cur = self.conn.cursor()
 
-    def fetch(self, table, column, criterion):
-        self.cur.execute("SELECT * FROM " + table + " WHERE " + column + " = '" + str(criterion) + "'")
+    def fetch(self, table, column0, column1, criterion, **kwargs):
+        command = "SELECT " + column0 + " FROM " + table + " WHERE " + column1 + " = '" + str(criterion) + "'"
+        for key, item in kwargs.items():
+            if key == "add":
+                command += " " + item
+        self.cur.execute(command)
         data = self.cur.fetchone()
         return data
 
@@ -105,6 +109,15 @@ class Database:
             "DELETE FROM " + table + " WHERE " + column + " = '" + value + "'")
         self.conn.commit()
 
+    def insertProducts(self):
+        list = [[1, 4],[2, 9],[3, 3]]
+        self.cur.execute("select add_order(ARRAY" + str(list) + ", 1)")
+        self.conn.commit()
+
+    def chartData(self, productId, deptId, month, year):
+        self.cur.execute("SELECT SUM(amount) FROM carts INNER JOIN products_in_carts USING(cart_id) INNER JOIN users USING(user_id) WHERE product_id = " + str(productId) + " AND dept_id = " + str(deptId) + " AND EXTRACT(MONTH FROM purchase_date) = " + str(month) + " AND EXTRACT(YEAR FROM purchase_date) = " + str(year))
+        self.cur.fetchone()
+
     def tmp(self):
         self.cur.execute("SELECT user_id, dept_id from users where rank='menedżer'")
         menedzerowie = self.cur.fetchall()
@@ -130,6 +143,40 @@ class Database:
             n = round(s[1], 2)
             self.cur.execute("UPDATE users SET salary = " + str(n) + " WHERE user_id = " + str(s[0]))
             self.conn.commit()
+
+    def tmp2(self):
+        self.cur.execute("SELECT order_id from orders WHERE order_id BETWEEN 1 and 1000")
+        dupa = self.cur.fetchall()
+        for dup in dupa:
+            self.cur.execute("SELECT product_id from products")
+            pro1 = self.cur.fetchall()
+            k = random.randint(1, 5)
+            for i in range(k):
+                amount = random.randint(10, 100)
+                product1 = random.choice(pro1)
+                product = product1[0]
+                pro1.remove(product1)
+                self.cur.execute(
+                    "INSERT INTO ordered_products values(" + str(dup[0]) + ", " + str(product) + ", " + str(
+                        amount) + ")")
+                self.conn.commit()
+
+    def tmp3(self):
+        self.cur.execute("SELECT cart_id from carts WHERE cart_id BETWEEN 1 and 1000")
+        dupa = self.cur.fetchall()
+        for dup in dupa:
+            self.cur.execute("SELECT product_id from products")
+            pro1 = self.cur.fetchall()
+            k = random.randint(1, 5)
+            for i in range(k):
+                amount = random.randint(1, 15)
+                product1 = random.choice(pro1)
+                product = product1[0]
+                pro1.remove(product1)
+                self.cur.execute(
+                    "INSERT INTO products_in_carts values(" + str(dup[0]) + ", " + str(product) + ", " + str(
+                        amount) + ")")
+                self.conn.commit()
 
     def disconnect(self):
         self.conn.close()

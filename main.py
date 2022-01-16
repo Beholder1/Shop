@@ -20,11 +20,15 @@ class Login:
             elif passwordGet == '':
                 errorLabel.configure(text="Nie podano hasła")
             else:
-                if db.fetch("users", "login", loginGet)[2] == passwordGet:
-                    rootToDestroy.destroy()
-                    mainProgram.MainProgram(db, loginGet)
+                user = db.fetch("users", "*", "login", loginGet)
+                if user:
+                    if user[2] == passwordGet:
+                        rootToDestroy.destroy()
+                        mainProgram.MainProgram(db, user[0])
+                    else:
+                        errorLabel.configure(text="Niepoprawne hasło")
                 else:
-                    errorLabel.configure(text="Niepoprawne hasło")
+                    errorLabel.configure(text="Nie ma takiego użytkownika")
 
         root = tk.Tk()
         root.geometry("1280x720")
@@ -62,4 +66,6 @@ class Login:
 
 
 if __name__ == "__main__":
+    # db = Database()
+    # db.insertProducts()
     Login()

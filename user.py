@@ -33,18 +33,34 @@ class User:
          self.creationDate,
          self.lastLogin,
          self.isBlocked,
-         self.employerId] = [self.db.fetch("users", "user_id", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
+         self.employerId] = [self.db.fetch("users", "*", "user_id", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
 
-    def showUser(self, frame, show):
-        ttk.Label(frame, text="Pracownik: ").grid(row=0, column=0, sticky="w")
-        comboEmployees = AutocompleteCombobox(frame)
-        comboEmployees.set_completion_list(self.db.fetchColumnAll("users", "name"))
-        comboEmployees.grid(row=0, column=1, sticky="w")
-        comboEmployees.focus_set()
-        showEmployeeButton = tk.Button(frame, text="Pokaż",
-                                       command=lambda: show(frame, 1, 0, User(
-                                           self.db.fetch("users", "name", comboEmployees.get())[2])))
-        showEmployeeButton.grid(row=0, column=2)
+    def accountConfigureBox(self, column, popButton):
+        def edit():
+            if entry0.get() == entry1.get():
+                self.db.set("users", column, entry0.get(), "user_id", self.id)
+                close()
+
+        def close():
+            root.destroy()
+            popButton.config(state="normal")
+
+        popButton.config(state="disabled")
+
+        bgColor = "white"
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
+                            relief=tk.RIDGE)
+        root.geometry("400x400")
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+
+        ttk.Label(root, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        entry0 = ttk.Entry(root)
+        entry0.grid(row=0, column=1)
+        ttk.Label(root, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
+        entry1 = ttk.Entry(root)
+        entry1.grid(row=1, column=1)
+        tk.Button(root, text="Zatwierdź", command=edit).grid(row=2, column=1)
 
     def addUser(self, frame):
         ttk.Label(frame, text="Imię: ").grid(row=0, column=0, sticky="w")

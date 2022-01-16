@@ -5,15 +5,15 @@ from product import Product
 from widgets import AutocompleteCombobox, SidebarMenu, WidgetList, OnlyMessageBox
 import pyglet
 from datetime import datetime
-from widgets import Boxes
+from tkcalendar import Calendar
 
 
 class MainProgram:
     def __init__(self, db, login):
         self.db = db
         self.login = login
-        db.fetch("users", "login", self.login)
-        db.set("users", "last_login", str(datetime.now()), "user_id", str(db.fetch("users", "login", self.login)[0]))
+        db.fetch("users", "*", "user_id", self.login)
+        db.set("users", "last_login", str(datetime.now()), "user_id", str(login))
         user = User(self.db, self.login)
 
         if user.isBlocked:
@@ -35,67 +35,116 @@ class MainProgram:
             style.configure('TCheckbutton', background="white")
 
             # Konto
-            frame2 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-            frame2.grid(row=0, column=1, sticky="nwse")
+            frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+            frame1.grid(row=0, column=1, sticky="nwse")
             accountInfo = user.__str__().split("\n")
             counter = 0
             for singleInfo in accountInfo:
-                ttk.Label(frame2, text=singleInfo).grid(row=counter, column=0, sticky="w")
+                ttk.Label(frame1, text=singleInfo).grid(row=counter, column=0, sticky="w")
                 counter += 1
-            box = Boxes(db)
-            emailButton = tk.Button(frame2, text="Zmień...", command=lambda: box.accountConfigureBox(user.id, "email", emailButton))
+            emailButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("email", emailButton))
             emailButton.grid(row=3, column=1, sticky="w")
-            phoneButton = tk.Button(frame2, text="Zmień...", command=lambda: box.accountConfigureBox(user.id, "phone_number", phoneButton))
+            phoneButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("phone_number", phoneButton))
             phoneButton.grid(row=4, column=1, sticky="w")
-            ttk.Label(frame2, text="Hasło: ").grid(row=7, column=0, sticky="w")
-            passwordButton = tk.Button(frame2, text="Zmień...", command=lambda: box.accountConfigureBox(user.id, "password", passwordButton))
+            ttk.Label(frame1, text="Hasło: ").grid(row=7, column=0, sticky="w")
+            passwordButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("password", passwordButton))
             passwordButton.grid(row=7, column=1, sticky="w")
 
             # Produkty
+            frame2 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
+                              relief=tk.RIDGE)
+            frame2.grid(row=0, column=1, sticky="nwse")
+            frame2.grid_propagate(False)
+
+            productDictionary = {
+                "Nazwa": "name",
+                "Producent": "mark",
+                "Kategoria": "category",
+                "Cena zakupu": "purchase_price",
+                "Cena sprzedaży": "price",
+                "Jednostka": "amount_type",
+                "Podatek": "tax_rate"
+            }
+
+            products = ("Id", "Nazwa", "Producent", "Cena zakupu", "Cena sprzedaży")
+            WidgetList(frame2, db, "products", ("product_id", "name", "marks.mark", "purchase_price", "price"),
+                       products,
+                       user, "Produkty", productDictionary, add="INNER JOIN marks USING (mark_id)",)
+
+            # Dostawy
             frame3 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
                               relief=tk.RIDGE)
             frame3.grid(row=0, column=1, sticky="nwse")
             frame3.grid_propagate(False)
 
-            products = ("Id", "Nazwa", "Producent", "Cena zakupu", "Cena sprzedaży")
-            WidgetList(frame3, db, "products", ("product_id", "name", "marks.mark", "purchase_price", "price"),
-                       products,
-                       user, "Produkty", add="INNER JOIN marks USING (mark_id)")
+            orderDictionary = {
+                "Nazwa": "name",
+                "Producent": "mark",
+                "Kategoria": "category",
+                "Cena zakupu": "purchase_price",
+                "Cena sprzedaży": "price",
+                "Jednostka": "amount_type",
+                "Podatek": "tax_rate"
+            }
 
-            # Dostawy
+            orders = ("Id", "Status", "Data złożenia", "Data dostarczenia", "Użytkownik")
+            WidgetList(frame3, db, "orders", ("order_id", "order_status", "order_date", "delivery_date", "users.login"),
+                       orders, user, "Dostawy", orderDictionary, add="INNER JOIN users USING (user_id)")
+
+            # Zamówienia
             frame4 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
                               relief=tk.RIDGE)
             frame4.grid(row=0, column=1, sticky="nwse")
             frame4.grid_propagate(False)
-
-            orders = ("Id", "Status", "Data złożenia", "Data dostarczenia", "Użytkownik")
-            WidgetList(frame4, db, "orders", ("order_id", "order_status", "order_date", "delivery_date", "users.login"),
-                       orders, user, "Dostawy", add="INNER JOIN users USING (user_id)")
-
-            # Zamówienia
-            frame5 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
-                              relief=tk.RIDGE)
-            frame5.grid(row=0, column=1, sticky="nwse")
-            frame5.grid_propagate(False)
             cart = ("Id", "Data złożenia", "Status", "Pracownik", "Klient")
-            WidgetList(frame5, db, "carts", ("cart_id", "purchase_date", "order_status", "login",
+
+            cartDictionary = {
+                "Klient": "client_id",
+            }
+
+            WidgetList(frame4, db, "carts", ("cart_id", "purchase_date", "order_status", "login",
                                              "concat(clients.first_name, ' ', clients.last_name)"),
-                       cart, user, "Zamówienia",
+                       cart, user, "Zamówienia", cartDictionary,
                        add="INNER JOIN users USING (user_id) INNER JOIN clients USING (client_id)")
 
             # Pracownicy
-            frame6 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-            frame6.grid(row=0, column=1, sticky="nwse")
+            frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+            frame5.grid(row=0, column=1, sticky="nwse")
+
+            userDictionary = {
+                "Imię": "first_name",
+                "Nazwisko": "last_name",
+                "Pesel": "pesel",
+                "Pensja": "salary",
+                "Email": "email",
+                "Telefon": "phone_number",
+            }
 
             users = ("Id", "Imię", "Nazwisko", "Pensja", "Ostatnio zalogowany")
-            WidgetList(frame6, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user,
-                       "Pracownicy")
+            WidgetList(frame5, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user,
+                       "Pracownicy", userDictionary)
 
-            frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
-            frame1.grid(row=0, column=1, sticky="nwse")
-            ttk.Label(frame1, text="Witaj, " + user.name, font=('Roboto Light', 40)).grid(row=0, column=0, padx=10)
+            # Raporty
+            frame6 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+            frame6.grid(row=0, column=1, sticky="nwse")
+            ttk.Label(frame6, text="Raporty", font=("Roboto Light", 25, "bold"), foreground="#0589CF").grid(row=0,
+                                                                                                             column=0)
+            frame6Content = tk.Frame(frame6, bg=bgColor)
+            frame6Content.grid(row=1, column=0)
+            dateStart = Calendar(frame6Content, background="#0589CF", bordercolor="black",
+               headersbackground="#d8edf8", normalbackground="white", foreground='white',
+               normalforeground='black', headersforeground='black')
+            dateStart.grid(row=0, column=0)
+            dateEnd = Calendar(frame6Content, background="#0589CF", bordercolor="black",
+               headersbackground="#d8edf8", normalbackground="white", foreground='white',
+               normalforeground='black', headersforeground='black')
+            dateEnd.grid(row=0, column=1)
 
-            SidebarMenu(root, frame1, frame2, frame3, frame4, frame5, frame6, user, db)
+            frame0 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
+            frame0.grid(row=0, column=1, sticky="nwse")
+            ttk.Label(frame0, text="Witaj, " + user.name, font=('Roboto Light', 40)).grid(row=0, column=0, padx=10)
+
+            SidebarMenu(root, (frame0, frame1, frame2, frame3, frame4, frame5, frame6), user, db)
             root.grid_columnconfigure(1, weight=1)
             root.mainloop()
 

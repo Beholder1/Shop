@@ -6,8 +6,11 @@ from user import User
 from product import Product
 from order import Order
 from cart import Cart
-from tkinter import Canvas
-
+from pandas import DataFrame
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from datetime import datetime
+import dateutil.relativedelta
 
 class AutocompleteCombobox(ttk.Combobox):
 
@@ -62,7 +65,7 @@ class AutocompleteCombobox(ttk.Combobox):
 
 
 class SidebarMenu:
-    def __init__(self, root, frame1, frame2, frame3, frame4, frame5, frame6, user, db):
+    def __init__(self, root, frames, user, db):
         menuIcon = tk.PhotoImage(file='icons/menu.png')
         closeIcon = tk.PhotoImage(file='icons/close.png')
         homeIcon = tk.PhotoImage(file='icons/home.png')
@@ -72,8 +75,9 @@ class SidebarMenu:
         orderIcon = tk.PhotoImage(file='icons/order.png')
         employeesIcon = tk.PhotoImage(file='icons/employees.png')
         logoutIcon = tk.PhotoImage(file='icons/logout.png')
+        reportIcon = tk.PhotoImage(file="icons/report.png")
 
-        self.currentFrame = frame1
+        self.currentFrame = frames[0]
 
         menuColor = '#0589CF'
         fontColor = 'black'
@@ -107,38 +111,42 @@ class SidebarMenu:
         def fill():
             if self.expanded:
                 menuButton.config(image=closeIcon, command=contract)
-                homeButton.config(image="", text="Strona główna", borderwidth=0)
+                homeButton.config(image="", text="Strona główna")
                 homeButton.grid_configure(pady=0)
-                accountButton.config(image="", text="Konto", borderwidth=0)
+                accountButton.config(image="", text="Konto")
                 accountButton.grid_configure(pady=0)
-                productButton.config(image="", text="Produkty", borderwidth=0)
+                productButton.config(image="", text="Produkty")
                 productButton.grid_configure(pady=0)
-                deliveryButton.config(image="", text="Dostawy", borderwidth=0)
+                deliveryButton.config(image="", text="Dostawy")
                 deliveryButton.grid_configure(pady=0)
-                orderButton.config(image="", text="Zamówienia", borderwidth=0)
+                orderButton.config(image="", text="Zamówienia")
                 orderButton.grid_configure(pady=0)
-                logoutButton.config(image="", text="Wyloguj", borderwidth=0)
+                logoutButton.config(image="", text="Wyloguj")
                 logoutButton.grid_configure(pady=0)
                 if user.role != "pracownik":
-                    employeesButton.config(image="", text="Pracownicy", borderwidth=0)
+                    employeesButton.config(image="", text="Pracownicy")
                     employeesButton.grid_configure(pady=0)
+                    reportButton.config(image="", text="Raporty")
+                    reportButton.grid_configure(pady=0)
             else:
                 menuButton.config(image=menuIcon, command=expand)
-                homeButton.config(image=homeIcon, borderwidth=0)
+                homeButton.config(image=homeIcon)
                 homeButton.grid_configure(pady=5)
-                accountButton.config(image=accountIcon, borderwidth=0)
+                accountButton.config(image=accountIcon)
                 accountButton.grid_configure(pady=5)
-                productButton.config(image=productIcon, borderwidth=0)
+                productButton.config(image=productIcon)
                 productButton.grid_configure(pady=5)
-                deliveryButton.config(image=deliveryIcon, borderwidth=0)
+                deliveryButton.config(image=deliveryIcon)
                 deliveryButton.grid_configure(pady=5)
-                orderButton.config(image=orderIcon, borderwidth=0)
+                orderButton.config(image=orderIcon)
                 orderButton.grid_configure(pady=5)
-                logoutButton.config(image=logoutIcon, borderwidth=0)
+                logoutButton.config(image=logoutIcon)
                 logoutButton.grid_configure(pady=5)
                 if user.role != "pracownik":
-                    employeesButton.config(image=employeesIcon, borderwidth=0)
+                    employeesButton.config(image=employeesIcon)
                     employeesButton.grid_configure(pady=5)
+                    reportButton.config(image=reportIcon)
+                    reportButton.grid_configure(pady=5)
 
         menuButton = tk.Button(
             frame,
@@ -160,23 +168,23 @@ class SidebarMenu:
         menuButton.grid(row=1, column=0, pady=5, padx=(10, 10), sticky='nw')
         homeButton = tk.Button(frame, image=homeIcon, background=menuColor, fg=fontColor,
                                font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                               activebackground=menuColor, command=lambda: changeFrame(frame1))
+                               activebackground=menuColor, command=lambda: changeFrame(frames[0]))
         homeButton.grid(row=2, column=0, pady=5, sticky='nwe')
         accountButton = tk.Button(frame, image=accountIcon, background=menuColor, fg=fontColor,
                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: changeFrame(frame2))
+                                  activebackground=menuColor, command=lambda: changeFrame(frames[1]))
         accountButton.grid(row=3, column=0, pady=5, sticky='nwe')
         productButton = tk.Button(frame, image=productIcon, background=menuColor, fg=fontColor,
                                   font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                  activebackground=menuColor, command=lambda: changeFrame(frame3))
+                                  activebackground=menuColor, command=lambda: changeFrame(frames[2]))
         productButton.grid(row=4, column=0, pady=5, sticky='nwe')
         deliveryButton = tk.Button(frame, image=deliveryIcon, background=menuColor, fg=fontColor,
                                    font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                   activebackground=menuColor, command=lambda: changeFrame(frame4))
+                                   activebackground=menuColor, command=lambda: changeFrame(frames[3]))
         deliveryButton.grid(row=5, column=0, pady=5, sticky='nwe')
         orderButton = tk.Button(frame, image=orderIcon, background=menuColor, fg=fontColor,
                                 font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                activebackground=menuColor, command=lambda: changeFrame(frame5))
+                                activebackground=menuColor, command=lambda: changeFrame(frames[4]))
         orderButton.grid(row=6, column=0, pady=5, sticky='nwe')
 
         def logout():
@@ -193,9 +201,13 @@ class SidebarMenu:
         if user.role != "pracownik":
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
                                         font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
-                                        activebackground=menuColor, command=lambda: changeFrame(frame6))
+                                        activebackground=menuColor, command=lambda: changeFrame(frames[5]))
             employeesButton.grid(row=7, column=0, pady=5, sticky='nwe')
-            logoutButton.grid(row=8, column=0, pady=5, sticky='nwe')
+            reportButton = tk.Button(frame, image=reportIcon, background=menuColor, fg=fontColor,
+                                     font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
+                                     activebackground=menuColor, command=lambda: changeFrame(frames[6]))
+            reportButton.grid(row=8, column=0, pady=5, sticky='nwe')
+            logoutButton.grid(row=9, column=0, pady=5, sticky='nwe')
         else:
             logoutButton.grid(row=7, column=0, pady=5, sticky='nwe')
 
@@ -237,38 +249,6 @@ class MessageBox:
                                                 padx=15)
 
 
-class Boxes:
-    def __init__(self, db):
-        self.db = db
-
-    def accountConfigureBox(self, id, column, popButton):
-        def edit():
-            if entry0.get() == entry1.get():
-                self.db.set("users", column, entry0.get(), "user_id", id)
-                close()
-
-        def close():
-            root.destroy()
-            popButton.config(state="normal")
-
-        popButton.config(state="disabled")
-
-        bgColor = "white"
-        root = tk.Tk()
-        root.configure(background=bgColor, borderwidth=1,
-                            relief=tk.RIDGE)
-        root.geometry("400x400")
-        root.protocol("WM_DELETE_WINDOW", lambda: close())
-
-        ttk.Label(root, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
-        entry0 = ttk.Entry(root)
-        entry0.grid(row=0, column=1)
-        ttk.Label(root, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
-        entry1 = ttk.Entry(root)
-        entry1.grid(row=1, column=1)
-        tk.Button(root, text="Zatwierdź", command=edit).grid(row=2, column=1)
-
-
 class OnlyMessageBox:
     def __init__(self, text):
         bgColor = "white"
@@ -282,10 +262,10 @@ class OnlyMessageBox:
 
 
 class DisplayBox:
-    def __init__(self, db, name, id):
+    def __init__(self, db, name, id, user):
         objectToDisplay = ""
         if name == "products":
-            objectToDisplay = Product(db, id)
+            objectToDisplay = Product(db, id, user.dept_id)
         elif name == "users":
             objectToDisplay = User(db, id)
         elif name == "orders":
@@ -295,33 +275,58 @@ class DisplayBox:
 
         bgColor = "white"
 
-        self.root = tk.Tk()
-        self.root.configure(background=bgColor, borderwidth=1,
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
-        self.root.geometry("400x400")
-        ttk.Label(self.root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        root.geometry("800x400")
+        ttk.Label(root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
 
-        self.root.resizable(False, False)
+        root.resizable(False, False)
+
+        if name == "products":
+            today = datetime.today()
+            months = []
+            amounts = []
+            for i in range(12):
+                month = today + dateutil.relativedelta.relativedelta(months=-i)
+                months.append(month)
+                amount = db.chartData(id, user.dept_id, month.strftime("%m"), month.strftime("%Y"))
+                if not amount:
+                    amount = 0
+                    amounts.append(amount)
+                else:
+                    amounts.append(amount[0])
+
+            data = {
+                "Miesiąc": months,
+                "Ilość sprzedanych sztuk": amounts
+            }
+            df = DataFrame(data, columns=["Miesiąc", "Ilość sprzedanych sztuk"])
+            figure = plt.Figure(figsize=(6, 5), dpi=50)
+            ax = figure.add_subplot(111)
+            chart_type = FigureCanvasTkAgg(figure, root)
+            chart_type.get_tk_widget().grid(row=0, column=1)
+            df = df[['Miesiąc', 'Ilość sprzedanych sztuk']].groupby('Miesiąc').sum()
+            df.plot(kind='line', legend=True, ax=ax)
+            ax.set_title('The Title for your chart')
 
 
 class AddBox:
-    def __init__(self, popButton, db):
+    def __init__(self, popButton, db, table, names):
         def command():
             flag = True
-            for entry in self.entries:
+            for entry in entries:
                 if entry.get() == '':
                     entry.configure()
-                    self.errorLabel.configure(text="Wypełnij wszystkie wymagane pola")
+                    errorLabel.configure(text="Wypełnij wszystkie wymagane pola")
                     flag = False
             if flag:
                 popButton.config(state="normal")
-                db.insert("products", (self.entries[0].get(), self.entries[3].get(), self.entries[2].get(),
-                                       self.entries[1].get(), self.entries[4].get(), self.entries[5].get(),
-                                       self.entries[6].get()))
-                self.root.destroy()
+                db.insert(table, entries)
+                root.destroy()
 
         def close():
-            self.root.destroy()
+            root.destroy()
             popButton.config(state="normal")
 
         bgColor = "white"
@@ -329,63 +334,33 @@ class AddBox:
 
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
-        self.root = tk.Tk()
-        self.root.configure(background=bgColor, borderwidth=1,
-                            relief=tk.RIDGE)
-        self.root.geometry("400x400")
-        self.root.resizable(False, False)
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.geometry("400x400")
+        root.resizable(False, False)
 
-        self.root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
 
-        ttk.Label(self.root, text="Nazwa:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0,
+        entries = []
+        counter = 0
+        for key, value in names.items():
+            ttk.Label(root, text=key + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
                                                                                                 sticky="w")
-        entry0 = ttk.Entry(self.root)
-        entry0.grid(row=0, column=1, sticky="w")
+            entry = ttk.Entry(root)
+            entry.grid(row=counter, column=1, sticky="w")
+            counter += 1
+            entries.append(entry)
 
-        ttk.Label(self.root, text="Producent:", background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0,
-                                                                                                    sticky="w")
-        entry1 = ttk.Entry(self.root)
-        entry1.grid(row=1, column=1, sticky="w")
+        errorLabel = ttk.Label(root, text="", foreground="red", background=bgColor, font=("Roboto Light", 8))
+        errorLabel.grid(row=len(entries), column=0, sticky="w")
 
-        ttk.Label(self.root, text="Cena zakupu:", background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=0,
-                                                                                                      sticky="w")
-        entry2 = ttk.Entry(self.root)
-        entry2.grid(row=2, column=1, sticky="w")
-
-        ttk.Label(self.root, text="Cena sprzedaży:", background=bgColor, font=("Roboto Light", 12)).grid(row=3,
-                                                                                                         column=0,
-                                                                                                         sticky="w")
-        entry3 = ttk.Entry(self.root)
-        entry3.grid(row=3, column=1, sticky="w")
-
-        ttk.Label(self.root, text="Kategoria:", background=bgColor, font=("Roboto Light", 12)).grid(row=4, column=0,
-                                                                                                    sticky="w")
-        entry4 = ttk.Entry(self.root)
-        entry4.grid(row=4, column=1, sticky="w")
-
-        ttk.Label(self.root, text="Jednostka:", background=bgColor, font=("Roboto Light", 12)).grid(row=5, column=0,
-                                                                                                    sticky="w")
-        entry5 = ttk.Combobox(self.root, values=db.getEnum("amount_type"))
-        entry5.grid(row=5, column=1, sticky="w")
-
-        ttk.Label(self.root, text="Podatek:", background=bgColor, font=("Roboto Light", 12)).grid(row=6, column=0,
-                                                                                                  sticky="w")
-        entry6 = ttk.Entry(self.root)
-        entry6.grid(row=6, column=1, sticky="w")
-        ttk.Label(self.root, text="%", background=bgColor, font=("Roboto Light", 12)).grid(row=6, column=2,
-                                                                                           sticky="w")
-
-        self.entries = (entry0, entry1, entry2, entry3, entry4, entry5, entry6)
-
-        self.errorLabel = ttk.Label(self.root, text="", foreground="red", background=bgColor, font=("Roboto Light", 8))
-        self.errorLabel.grid(row=7, column=0, sticky="w")
-
-        tk.Button(self.root, text="Dodaj", width=10, background=buttonColor, fg="white",
-                  command=lambda: command()).grid(row=7, column=0, sticky="w")
+        tk.Button(root, text="Dodaj", width=10, background=buttonColor, fg="white",
+                  command=lambda: command()).grid(row=len(entries) + 1, column=0, sticky="w")
 
 
 class WidgetList:
-    def __init__(self, framePassed, db, table, columnNames, names, user, title, **kwargs):
+    def __init__(self, framePassed, db, table, columnNames, names, user, title, addDictionary, **kwargs):
         self.addIcon = tk.PhotoImage(file='icons/add.png')
         self.refreshIcon = tk.PhotoImage(file='icons/refresh.png')
         self.displayIcon = tk.PhotoImage(file='icons/display.png')
@@ -398,6 +373,7 @@ class WidgetList:
 
         framePassed.grid_columnconfigure(0, weight=1)
         bgColor = '#FFFFFF'
+        headerColor = "#0589CF"
         ttk.Label(framePassed, text=title, font=("Roboto Light", 25, "bold"), foreground="#0589CF").grid(row=0,
                                                                                                          column=0)
         frame = tk.Frame(framePassed, background=bgColor)
@@ -426,7 +402,7 @@ class WidgetList:
         buttonsFrame = tk.Frame(frame, background=bgColor)
         buttonsFrame.grid(row=0, column=0, sticky="w")
         addButton = tk.Button(buttonsFrame, image=self.addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
-                              activebackground=bgColor, command=lambda: AddBox(addButton, db))
+                              activebackground=bgColor, command=lambda: AddBox(addButton, db, table, addDictionary))
         addButton.grid(row=0, column=0, sticky="w", padx=(10, 0))
         refreshButton = tk.Button(buttonsFrame, image=self.refreshIcon, relief=tk.SUNKEN, borderwidth=0,
                                   background=bgColor,
@@ -439,10 +415,13 @@ class WidgetList:
         sortButtons = []
         for name in names:
             button = tk.Button(frame, text=name, font=("Roboto Light", 12), relief=tk.SUNKEN, borderwidth=0,
-                               background=bgColor,
-                               activebackground=bgColor)
-            button.grid(row=1, column=names.index(name), sticky="w")
+                               background=headerColor, foreground="white",
+                               activebackground=headerColor)
+            button.grid(row=1, column=names.index(name), sticky="we")
             sortButtons.append(button)
+        ttk.Label(frame, background=headerColor).grid(row=1, column=len(sortButtons), sticky="nswe")
+        ttk.Label(frame, background=headerColor).grid(row=1, column=len(sortButtons) + 1, sticky="nswe")
+        ttk.Label(frame, background=headerColor).grid(row=1, column=len(sortButtons) + 2, sticky="nswe")
         sortButtons[0].grid_configure(padx=(7, 0))
         sortButtons[0].configure(command=lambda: sort(names[0]))
         sortButtons[1].configure(command=lambda: sort(names[1]))
@@ -483,7 +462,8 @@ class WidgetList:
             for widget in self.labels:
                 for label in range(5):
                     widget[label].configure(text=self.itemList[counter][label])
-                widget[5].configure(command=lambda idToPass=widget[0].cget("text"): DisplayBox(db, table, idToPass))
+                widget[5].configure(
+                    command=lambda idToPass=widget[0].cget("text"): DisplayBox(db, table, idToPass, user))
                 widget[6].configure()
                 widget[7].configure()
                 counter += 1
@@ -522,14 +502,17 @@ class WidgetList:
             label4.grid(row=row, column=4, sticky="we")
             columns.append(label4)
             if table == "users":
-                isBlocked = db.fetch(table, "user_id", self.itemList[self.startingIndex][0])[12]
+                isBlocked = db.fetch(table, "*", "user_id", self.itemList[self.startingIndex][0])[12]
                 if isBlocked:
                     for label in columns:
                         label.configure(foreground="red")
             displayButton = tk.Button(frame, image=self.displayIcon, relief=tk.SUNKEN, borderwidth=0,
                                       background=bgColor,
                                       activebackground=bgColor,
-                                      command=lambda idToPass=self.itemList[self.startingIndex][0]: DisplayBox(db, table, idToPass))
+                                      command=lambda idToPass=self.itemList[self.startingIndex][0]: DisplayBox(db,
+                                                                                                               table,
+                                                                                                               idToPass,
+                                                                                                               user))
             displayButton.grid(row=row, column=5, sticky="nwse")
             columns.append(displayButton)
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
