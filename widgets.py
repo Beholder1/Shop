@@ -82,7 +82,7 @@ class SidebarMenu:
         menuColor = '#0589CF'
         fontColor = 'black'
         min_w = 50
-        max_w = 130
+        max_w = 120
         self.cur_width = min_w
         self.expanded = False
 
@@ -92,7 +92,7 @@ class SidebarMenu:
         def expand():
             rep = root.after(2, expand)
             if not self.expanded:
-                self.cur_width += 80
+                self.cur_width += 70
                 frame.config(width=self.cur_width)
             if self.cur_width >= max_w:
                 self.expanded = True
@@ -100,7 +100,7 @@ class SidebarMenu:
                 fill()
 
         def contract():
-            self.cur_width -= 80
+            self.cur_width -= 70
             rep = root.after(2, contract)
             frame.config(width=self.cur_width)
             if self.cur_width <= min_w:

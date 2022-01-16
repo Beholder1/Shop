@@ -131,14 +131,17 @@ class MainProgram:
                                                                                                              column=0)
             frame6Content = tk.Frame(frame6, bg=bgColor)
             frame6Content.grid(row=1, column=0)
+            ttk.Label(frame6Content, text="Od:", background=bgColor).grid(row=0, column=0)
+            ttk.Label(frame6Content, text="Do:", background=bgColor).grid(row=0, column=2)
             dateStart = Calendar(frame6Content, background="#0589CF", bordercolor="black",
                headersbackground="#d8edf8", normalbackground="white", foreground='white',
                normalforeground='black', headersforeground='black')
-            dateStart.grid(row=0, column=0)
+            dateStart.grid(row=1, column=0)
             dateEnd = Calendar(frame6Content, background="#0589CF", bordercolor="black",
                headersbackground="#d8edf8", normalbackground="white", foreground='white',
                normalforeground='black', headersforeground='black')
-            dateEnd.grid(row=0, column=1)
+            dateEnd.grid(row=1, column=2)
+            tk.Button(frame6Content, text="Pokaż raport").grid(row=2, column=1)
 
             frame0 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame0.grid(row=0, column=1, sticky="nwse")
