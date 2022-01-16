@@ -47,19 +47,26 @@ class User:
 
         popButton.config(state="disabled")
 
+        if column == "phone_number":
+            text = "numer telefonu"
+        elif column == "password":
+            text = "hasło"
+        else:
+            text = column
+
         bgColor = "white"
         root = tk.Tk()
         root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
         root.protocol("WM_DELETE_WINDOW", lambda: close())
-        root.title("Zmień " + column)
+        root.title("Zmień " + text)
 
         frame = tk.Frame(root, background=bgColor)
         frame.grid(row=0, column=0, pady=5, padx=5)
-        ttk.Label(frame, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        ttk.Label(frame, text="Podaj " + text, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
         entry0 = ttk.Entry(frame)
         entry0.grid(row=0, column=1)
-        ttk.Label(frame, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
+        ttk.Label(frame, text="Powtórz " + text, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
         entry1 = ttk.Entry(frame)
         entry1.grid(row=1, column=1)
         tk.Button(frame, text="Zatwierdź", command=edit).grid(row=2, column=1)
