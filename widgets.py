@@ -197,7 +197,7 @@ class SidebarMenu:
                                  font=('Roboto Light', 13), relief=tk.SUNKEN, borderwidth=0,
                                  activebackground=menuColor,
                                  command=lambda: MessageBox("Czy na pewno chcesz się wylogować?", logoutButton,
-                                                            logout))
+                                                            logout, "Wyloguj się"))
 
         if user.role != "pracownik":
             employeesButton = tk.Button(frame, image=employeesIcon, background=menuColor, fg=fontColor,
@@ -216,7 +216,7 @@ class SidebarMenu:
 
 
 class MessageBox:
-    def __init__(self, text, popButton, commandPassed):
+    def __init__(self, text, popButton, commandPassed, title):
         def command():
             self.root.destroy()
             commandPassed()
@@ -231,6 +231,7 @@ class MessageBox:
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
         self.root = tk.Tk()
+        self.root.title(title)
         self.root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
         self.root.geometry("400x125")
@@ -240,7 +241,6 @@ class MessageBox:
         self.root.columnconfigure(0, weight=1)
         self.root.protocol("WM_DELETE_WINDOW", lambda: close())
         label = ttk.Label(self.root, text=text, background=bgColor, font=("Roboto Light", 12))
-        label.cget()
         label.grid(row=0, column=0)
         buttonsFrame = tk.Frame(self.root, background=bgColor)
         buttonsFrame.grid(row=1, column=0)
@@ -407,9 +407,11 @@ class EditBox:
             root.destroy()
             popButton.config(state="normal")
 
+        root = tk.Tk()
         objectToDisplay = ""
         if name == "products":
             objectToDisplay = Product(db, id, user.dept_id)
+            root.title(objectToDisplay.id)
         elif name == "users":
             objectToDisplay = User(db, id)
         elif name == "orders":
@@ -420,7 +422,6 @@ class EditBox:
         bgColor = "white"
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
-        root = tk.Tk()
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
         root.resizable(False, False)
@@ -439,7 +440,7 @@ class EditBox:
             button = tk.Button(root, text="Edytuj...")
             button.configure(command=lambda buttonToPass=button, rowToPass=row1: MessageBox(
                 'Czy na pewno chcesz zmienić wartość elementu "' + rowToPass[0] + '" z "' + rowToPass[
-                    1] + '" na "' + str(entry.get()) + '"?', buttonToPass, print(1)))
+                    1] + '" na "' + str(entry.get()) + '"?', buttonToPass, print(1), "Edytuj"))
             button.grid(row=counter, column=3, sticky="w")
             counter += 1
 
@@ -554,7 +555,7 @@ class WidgetList:
                 widget[6].configure()
                 widget[7].configure(command=lambda idToPass=widget[0].cget("text"), thisButton=deleteButton: MessageBox(
                     "Czy na pewno chcesz usunąć element o id = " + str(idToPass) + "?", thisButton,
-                    lambda: db.delete(table, columnNames[0], idToPass)))
+                    lambda: db.delete(table, columnNames[0], idToPass), "Usuń"))
                 counter += 1
             if choice == "start":
                 self.rangeEnd = self.iterator
@@ -614,7 +615,7 @@ class WidgetList:
                                      activebackground=bgColor)
             deleteButton.configure(command=lambda idToPass=idForButton, thisButton=deleteButton: MessageBox(
                 "Czy na pewno chcesz usunąć element o id = " + idToPass + "?", thisButton,
-                lambda: db.delete(table, columnNames[0], idToPass)))
+                lambda: db.delete(table, columnNames[0], idToPass), "Usuń"))
             deleteButton.grid(row=row, column=7, sticky="nwse", padx=(0, 10))
             columns.append(deleteButton)
             if row % 2 != 0:
