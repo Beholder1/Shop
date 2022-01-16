@@ -266,11 +266,14 @@ class OnlyMessageBox:
 
 class DisplayBox:
     def __init__(self, db, name, id, user):
+        root = tk.Tk()
         objectToDisplay = ""
         if name == "products":
             objectToDisplay = Product(db, id, user.dept_id)
+            root.title(objectToDisplay.name)
         elif name == "users":
             objectToDisplay = User(db, id)
+            root.title(objectToDisplay.login)
         elif name == "orders":
             objectToDisplay = Order(db, id)
         elif name == "carts":
@@ -278,7 +281,7 @@ class DisplayBox:
 
         bgColor = "white"
 
-        root = tk.Tk()
+
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
         ttk.Label(root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)

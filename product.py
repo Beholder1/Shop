@@ -25,11 +25,12 @@ class Product:
         self.totalIncome = round((self.price * (1-self.taxRate) - self.purchasePrice) * self.SoldInTotal, 2)
 
     def __str__(self):
-        return "Nazwa: " + str(self.name) + "\n" + \
+        return "Id: " + str(self.id) + "\n" + \
+               "Nazwa: " + str(self.name) + "\n" + \
                "Producent: " + str(self.brand) + "\n" + \
                "Cena zakupu: " + str(self.purchasePrice) + "zł\n" + \
                "Cena sprzedaży: " + str(self.price) + "zł\n" + \
-               "Podatek: " + str(self.taxRate) + "\n" + \
+               "Podatek: " + str(self.taxRate*100) + "%\n" + \
                "Kategoria: " + str(self.category) + "\n" + \
                "Ilość: " + str(self.amount) + " " + str(self.unit) + "\n" + \
                "Marża: " + str(self.margin) + "%\n" + \
