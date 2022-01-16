@@ -27,8 +27,8 @@ class MainProgram:
             root.configure(background=bgColor)
             root.grid_rowconfigure(0, weight=1)
             root.geometry("1280x720")
-
             root.title("Store manager")
+            root.eval('tk::PlaceWindow . center')
 
             style = ttk.Style()
             style.configure('TLabel', background="white", foreground=fontColor, font=('Roboto Light', 12))
@@ -43,12 +43,12 @@ class MainProgram:
                 ttk.Label(frame1, text=singleInfo).grid(row=counter, column=0, sticky="w")
                 counter += 1
             emailButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("email", emailButton))
-            emailButton.grid(row=3, column=1, sticky="w")
+            emailButton.grid(row=4, column=1, sticky="w")
             phoneButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("phone_number", phoneButton))
-            phoneButton.grid(row=4, column=1, sticky="w")
-            ttk.Label(frame1, text="Hasło: ").grid(row=7, column=0, sticky="w")
+            phoneButton.grid(row=5, column=1, sticky="w")
+            ttk.Label(frame1, text="Hasło: ").grid(row=8, column=0, sticky="w")
             passwordButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("password", passwordButton))
-            passwordButton.grid(row=7, column=1, sticky="w")
+            passwordButton.grid(row=8, column=1, sticky="w")
 
             # Produkty
             frame2 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
