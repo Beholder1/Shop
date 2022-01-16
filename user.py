@@ -51,16 +51,18 @@ class User:
         root = tk.Tk()
         root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
-        root.geometry("400x400")
         root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Zmień " + column)
 
-        ttk.Label(root, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
-        entry0 = ttk.Entry(root)
+        frame = tk.Frame(root, background=bgColor)
+        frame.grid(row=0, column=0, pady=5, padx=5)
+        ttk.Label(frame, text="Podaj " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        entry0 = ttk.Entry(frame)
         entry0.grid(row=0, column=1)
-        ttk.Label(root, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
-        entry1 = ttk.Entry(root)
+        ttk.Label(frame, text="Powtórz " + column, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
+        entry1 = ttk.Entry(frame)
         entry1.grid(row=1, column=1)
-        tk.Button(root, text="Zatwierdź", command=edit).grid(row=2, column=1)
+        tk.Button(frame, text="Zatwierdź", command=edit).grid(row=2, column=1)
 
     def addUser(self, frame):
         ttk.Label(frame, text="Imię: ").grid(row=0, column=0, sticky="w")
