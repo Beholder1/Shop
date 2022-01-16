@@ -32,7 +32,7 @@ class Database:
     def fetchAll(self, table, columns, **kwargs):
         command = "SELECT "
         if type(columns) == str:
-            command +=columns
+            command += columns
         else:
             for column in columns:
                 command += column
@@ -104,7 +104,8 @@ class Database:
 
     def set(self, table, column, value, criterionColumn, criterionValue):
         self.cur.execute(
-            "UPDATE " + str(table) + " SET " + str(column) + " = '" + str(value) + "' WHERE " + str(criterionColumn) + " = '" + str(criterionValue) + "'")
+            "UPDATE " + str(table) + " SET " + str(column) + " = '" + str(value) + "' WHERE " + str(
+                criterionColumn) + " = '" + str(criterionValue) + "'")
         self.conn.commit()
 
     def delete(self, table, column, value):
@@ -113,12 +114,15 @@ class Database:
         self.conn.commit()
 
     def insertProducts(self):
-        list = [[1, 4],[2, 9],[3, 3]]
+        list = [[1, 4], [2, 9], [3, 3]]
         self.cur.execute("select add_order(ARRAY" + str(list) + ", 1)")
         self.conn.commit()
 
     def chartData(self, productId, deptId, month, year):
-        self.cur.execute("SELECT SUM(amount) FROM carts INNER JOIN products_in_carts USING(cart_id) INNER JOIN users USING(user_id) WHERE product_id = " + str(productId) + " AND dept_id = " + str(deptId) + " AND EXTRACT(MONTH FROM purchase_date) = " + str(month) + " AND EXTRACT(YEAR FROM purchase_date) = " + str(year))
+        self.cur.execute(
+            "SELECT SUM(amount) FROM carts INNER JOIN products_in_carts USING(cart_id) INNER JOIN users USING(user_id) WHERE product_id = " + str(
+                productId) + " AND dept_id = " + str(deptId) + " AND EXTRACT(MONTH FROM purchase_date) = " + str(
+                month) + " AND EXTRACT(YEAR FROM purchase_date) = " + str(year))
         return self.cur.fetchone()
 
     def tmp(self):

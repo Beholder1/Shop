@@ -28,7 +28,6 @@ class MainProgram:
             root.grid_rowconfigure(0, weight=1)
             root.geometry("1280x720")
             root.title("Store manager")
-            root.eval('tk::PlaceWindow . center')
 
             style = ttk.Style()
             style.configure('TLabel', background="white", foreground=fontColor, font=('Roboto Light', 12))

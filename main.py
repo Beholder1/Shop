@@ -36,7 +36,6 @@ class Login:
         root.grid_rowconfigure(0, weight=1)
         root.grid_columnconfigure(0, weight=1)
         root.title("Zaloguj się")
-        root.eval('tk::PlaceWindow . center')
 
         style = ttk.Style()
         style.configure('TLabel', background=bgColor, foreground=fontColor, font=('Roboto Light', 12))

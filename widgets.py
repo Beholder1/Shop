@@ -402,7 +402,7 @@ class AddBox:
 
 
 class EditBox:
-    def __init__(self, db, popButton, name, id, user):
+    def __init__(self, db, popButton, name, id, user, **kwargs):
         def close():
             root.destroy()
             popButton.config(state="normal")
@@ -411,7 +411,7 @@ class EditBox:
         objectToDisplay = ""
         if name == "products":
             objectToDisplay = Product(db, id, user.dept_id)
-            root.title(objectToDisplay.id)
+            root.title(objectToDisplay.name)
         elif name == "users":
             objectToDisplay = User(db, id)
         elif name == "orders":
@@ -427,11 +427,19 @@ class EditBox:
         root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", lambda: close())
 
+
+
         splittedToRows = str(objectToDisplay).split("\n")
+        for key, item in kwargs.items():
+            if key == "indexes":
+                tmp=[]
+                for i in item:
+                    tmp.append(splittedToRows[i])
+                splittedToRows=tmp
         counter = 0
         for row in splittedToRows:
             row1 = row.split(": ")
-            ttk.Label(root, text=row1[0], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
+            ttk.Label(root, text=row1[0] + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
                                                                                               sticky="nw")
             ttk.Label(root, text=row1[1], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=1,
                                                                                               sticky="nw")
@@ -608,7 +616,7 @@ class WidgetList:
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                    activebackground=bgColor)
             idForButton = str(columns[0].cget("text"))
-            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user))
+            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=(1,2,3,4,5,6,7)))
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
