@@ -100,6 +100,7 @@ class User:
         return "Login: " + str(self.login) + "\n" + \
                "Imię: " + str(self.name) + "\n" + \
                "Nazwisko: " + str(self.last_name) + "\n" + \
+               "Stanowisko: " + str(self.role) + "\n" + \
                "Email: " + str(self.email) + "\n" + \
                "Telefon: " + str(self.phoneNumber) + "\n" + \
                "Pensja: " + str(self.salary) + "\n" + \
