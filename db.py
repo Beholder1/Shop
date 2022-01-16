@@ -104,7 +104,7 @@ class Database:
 
     def set(self, table, column, value, criterionColumn, criterionValue):
         self.cur.execute(
-            "UPDATE " + table + " SET " + column + " = '" + value + "' WHERE " + criterionColumn + " = '" + criterionValue + "'")
+            "UPDATE " + str(table) + " SET " + str(column) + " = '" + str(value) + "' WHERE " + str(criterionColumn) + " = '" + str(criterionValue) + "'")
         self.conn.commit()
 
     def delete(self, table, column, value):
