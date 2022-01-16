@@ -22,7 +22,7 @@ class Product:
         self.SoldInTotal = db.fetchAll("carts", ["SUM (amount)"], add="INNER JOIN products_in_carts USING(cart_id) INNER JOIN users USING(user_id) WHERE dept_id = " + str(deptId) + " AND product_id = " + str(self.id) + " AND order_status <> 'nieopłacono'")[0][0]
         if not self.SoldInTotal:
             self.SoldInTotal = 0
-        self.totalIncome = (self.price * (1-self.taxRate) - self.purchasePrice) * self.SoldInTotal
+        self.totalIncome = round((self.price * (1-self.taxRate) - self.purchasePrice) * self.SoldInTotal, 2)
 
     def __str__(self):
         return "Nazwa: " + str(self.name) + "\n" + \

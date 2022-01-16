@@ -119,7 +119,7 @@ class Database:
 
     def chartData(self, productId, deptId, month, year):
         self.cur.execute("SELECT SUM(amount) FROM carts INNER JOIN products_in_carts USING(cart_id) INNER JOIN users USING(user_id) WHERE product_id = " + str(productId) + " AND dept_id = " + str(deptId) + " AND EXTRACT(MONTH FROM purchase_date) = " + str(month) + " AND EXTRACT(YEAR FROM purchase_date) = " + str(year))
-        self.cur.fetchone()
+        return self.cur.fetchone()
 
     def tmp(self):
         self.cur.execute("SELECT user_id, dept_id from users where rank='menedżer'")
