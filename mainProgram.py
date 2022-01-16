@@ -63,7 +63,7 @@ class MainProgram:
                 "Cena zakupu": "purchase_price",
                 "Cena sprzedaży": "price",
                 "Jednostka": "amount_type",
-                "Podatek": "tax_rate"
+                "Podatek": "tax_rateX"
             }
 
             products = ("Id", "Nazwa", "Producent", "Cena zakupu", "Cena sprzedaży")

@@ -34,5 +34,5 @@ class Product:
                "Ilość: " + str(self.amount) + " " + str(self.unit) + "\n" + \
                "Marża: " + str(self.margin) + "%\n" + \
                "Sprzedano łącznie: " + str(self.SoldInTotal) + " " + str(self.unit) + "\n" + \
-               "Całkowity zysk: " + str(self.totalIncome) + "zł\n"
+               "Całkowity zysk: " + str(self.totalIncome) + "zł"
 

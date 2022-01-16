@@ -238,7 +238,9 @@ class MessageBox:
         self.root.rowconfigure(1, weight=1)
         self.root.columnconfigure(0, weight=1)
         self.root.protocol("WM_DELETE_WINDOW", lambda: close())
-        ttk.Label(self.root, text=text, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        label = ttk.Label(self.root, text=text, background=bgColor, font=("Roboto Light", 12))
+        label.cget()
+        label.grid(row=0, column=0)
         buttonsFrame = tk.Frame(self.root, background=bgColor)
         buttonsFrame.grid(row=1, column=0)
         tk.Button(buttonsFrame, text="Tak", width=10, background=buttonColor, fg="white",
@@ -278,7 +280,6 @@ class DisplayBox:
         root = tk.Tk()
         root.configure(background=bgColor, borderwidth=1,
                             relief=tk.RIDGE)
-        root.geometry("800x400")
         ttk.Label(root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
 
         root.resizable(False, False)
@@ -337,7 +338,6 @@ class AddBox:
         root = tk.Tk()
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
-        root.geometry("400x400")
         root.resizable(False, False)
 
         root.protocol("WM_DELETE_WINDOW", lambda: close())
@@ -345,10 +345,16 @@ class AddBox:
         entries = []
         counter = 0
         for key, value in names.items():
+            if value[-1] != "X":
+                entry = ttk.Entry(root)
+                entry.grid(row=counter, column=1, sticky="w")
+            else:
+                entry = ttk.Combobox(root)
+                entry.grid(row=counter, column=1, sticky="w")
+                value = value[:-1]
+                entry.configure(values=db.fetchAll("tax_rates", "tax_rate"))
             ttk.Label(root, text=key + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
                                                                                                 sticky="w")
-            entry = ttk.Entry(root)
-            entry.grid(row=counter, column=1, sticky="w")
             counter += 1
             entries.append(entry)
 
@@ -357,6 +363,46 @@ class AddBox:
 
         tk.Button(root, text="Dodaj", width=10, background=buttonColor, fg="white",
                   command=lambda: command()).grid(row=len(entries) + 1, column=0, sticky="w")
+
+
+class EditBox:
+    def __init__(self, db, popButton, name, id, user):
+        def close():
+            root.destroy()
+            popButton.config(state="normal")
+        objectToDisplay = ""
+        if name == "products":
+            objectToDisplay = Product(db, id, user.dept_id)
+        elif name == "users":
+            objectToDisplay = User(db, id)
+        elif name == "orders":
+            objectToDisplay = Order(db, id)
+        elif name == "carts":
+            objectToDisplay = Cart(db, id)
+
+        bgColor = "white"
+        pyglet.font.add_file('Roboto-Light.ttf')
+        popButton.config(state="disabled")
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.resizable(False, False)
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+
+        splittedToRows = str(objectToDisplay).split("\n")
+        counter = 0
+        for row in splittedToRows:
+            row1 = row.split(": ")
+            ttk.Label(root, text=row1[0], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
+                                                                                                      sticky="nw")
+            ttk.Label(root, text=row1[1], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=1,
+                                                                                             sticky="nw")
+            entry = ttk.Entry(root)
+            entry.grid(row=counter, column=2)
+            button = tk.Button(root, text="Edytuj...")
+            button.configure(command=lambda buttonToPass=button, rowToPass=row1: MessageBox('Czy na pewno chcesz zmienić wartość elementu "' + rowToPass[0] + '" z "' + rowToPass[1] + '" na "' + str(entry.get()) + '"?', buttonToPass, print(1)))
+            button.grid(row=counter, column=3, sticky="w")
+            counter += 1
 
 
 class WidgetList:
@@ -465,7 +511,9 @@ class WidgetList:
                 widget[5].configure(
                     command=lambda idToPass=widget[0].cget("text"): DisplayBox(db, table, idToPass, user))
                 widget[6].configure()
-                widget[7].configure()
+                widget[7].configure(command=lambda idToPass=widget[0].cget("text"), thisButton=deleteButton: MessageBox(
+                "Czy na pewno chcesz usunąć element o id = " + str(idToPass) + "?", thisButton,
+                lambda: db.delete(table, columnNames[0], idToPass)))
                 counter += 1
             if choice == "start":
                 self.rangeEnd = self.iterator
@@ -517,9 +565,10 @@ class WidgetList:
             columns.append(displayButton)
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                    activebackground=bgColor)
+            idForButton = str(columns[0].cget("text"))
+            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user))
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
-            idForButton = str(columns[0].cget("text"))
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                      activebackground=bgColor)
             deleteButton.configure(command=lambda idToPass=idForButton, thisButton=deleteButton: MessageBox(

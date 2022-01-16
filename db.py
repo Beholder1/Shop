@@ -31,10 +31,13 @@ class Database:
 
     def fetchAll(self, table, columns, **kwargs):
         command = "SELECT "
-        for column in columns:
-            command += column
-            command += ", "
-        command = command[:-2]
+        if type(columns) == str:
+            command +=columns
+        else:
+            for column in columns:
+                command += column
+                command += ", "
+            command = command[:-2]
         command += " FROM "
         command += table
         for key, item in kwargs.items():

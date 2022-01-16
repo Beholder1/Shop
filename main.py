@@ -39,7 +39,6 @@ class Login:
 
         style = ttk.Style()
         style.configure('TLabel', background=bgColor, foreground=fontColor, font=('Roboto Light', 12))
-        style.configure('TCheckbutton', background=bgColor)
         root.update()
 
         frame = tk.Frame(root, bg=menuColor, width=400, height=200)
