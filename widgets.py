@@ -276,6 +276,7 @@ class DisplayBox:
             root.title(objectToDisplay.login)
         elif name == "orders":
             objectToDisplay = Order(db, id)
+            root.title("Zamówienie o id = " + str(objectToDisplay.id))
         elif name == "carts":
             objectToDisplay = Cart(db, id)
 
@@ -418,7 +419,6 @@ class EditBox:
             objectToDisplay = User(db, id)
         elif name == "orders":
             objectToDisplay = Order(db, id)
-            root.title("Zamówienie o id = " + str(objectToDisplay.id))
         elif name == "carts":
             objectToDisplay = Cart(db, id)
 

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from user import User
-from product import Product
 from widgets import AutocompleteCombobox, SidebarMenu, WidgetList, OnlyMessageBox
 import pyglet
 from datetime import datetime
