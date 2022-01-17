@@ -240,7 +240,7 @@ class MessageBox:
         self.root.rowconfigure(1, weight=1)
         self.root.columnconfigure(0, weight=1)
         self.root.protocol("WM_DELETE_WINDOW", lambda: close())
-        label = ttk.Label(self.root, text=text, background=bgColor, font=("Roboto Light", 12))
+        label = ttk.Label(self.root, text=text, background=bgColor, font=("Roboto Light", 12), wraplength=390)
         label.grid(row=0, column=0)
         buttonsFrame = tk.Frame(self.root, background=bgColor)
         buttonsFrame.grid(row=1, column=0)
