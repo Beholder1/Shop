@@ -328,8 +328,14 @@ class AddOrdersBox:
                 ttk.Label(root, text="Produkt " + str(i) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1, column=0)
                 entries.append(ttk.Entry(root))
                 entries[i].grid(row=i+1, column=1)
+                ttk.Label(root, text="Ilość: ", background=bgColor, font=("Roboto Light", 12)).grid(
+                    row=i + 1, column=2)
+                entries1.append(ttk.Entry(root))
+                entries1[i].grid(row=i + 1, column=3)
+            tk.Button(root, text="Dodaj").grid(row=i+2, column=1)
 
-        entries=[]
+        entries = []
+        entries1 = []
         bgColor = "white"
         buttonColor = "#0589CF"
 
