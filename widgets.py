@@ -318,26 +318,28 @@ class DisplayBox:
 
 
 class AddOrdersBox:
-    def __init__(self, popButton):
+    def __init__(self, popButton, name):
         def close():
             root.destroy()
             popButton.config(state="normal")
 
         def command(amount):
             for i in range(int(amount)):
-                ttk.Label(root, text="Produkt " + str(i+1) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1, column=0)
+                ttk.Label(root, text="Produkt " + str(i+1) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1+add, column=0)
                 entries.append(ttk.Entry(root))
-                entries[i].grid(row=i+1, column=1)
+                entries[i].grid(row=i+1+add, column=1)
                 ttk.Label(root, text="Ilość: ", background=bgColor, font=("Roboto Light", 12)).grid(
-                    row=i + 1, column=2)
+                    row=i + 1+add, column=2)
                 entries1.append(ttk.Entry(root))
-                entries1[i].grid(row=i + 1, column=3)
-            tk.Button(root, text="Dodaj").grid(row=i+2, column=1)
+                entries1[i].grid(row=i + 1+add, column=3)
+            tk.Button(root, text="Dodaj").grid(row=i+2+add, column=1)
 
         entries = []
         entries1 = []
         bgColor = "white"
         buttonColor = "#0589CF"
+
+
 
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
@@ -347,12 +349,19 @@ class AddOrdersBox:
         root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", lambda: close())
         root.title("Dodaj")
-
+        add = 0
+        if name == "carts":
+            ttk.Label(root, text="Klient:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=0, column=0)
+            entry = ttk.Entry(root)
+            entry.grid(row=0, column=1)
+            add=1
         ttk.Label(root, text="Wybierz ilość rodzajów produktów:", background=bgColor, font=("Roboto Light", 12)).grid(
-            row=0, column=0)
+            row=0+add, column=0)
         entry = ttk.Entry(root)
-        entry.grid(row=0, column=1)
-        tk.Button(root, text="Zatwierdź", command=lambda: command(entry.get())).grid(row=0, column=2)
+        entry.grid(row=0+add, column=1)
+        tk.Button(root, text="Zatwierdź", command=lambda: command(entry.get())).grid(row=0+add, column=2)
 
 
 
@@ -529,7 +538,9 @@ class WidgetList:
         addButton = tk.Button(buttonsFrame, image=self.addIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                               activebackground=bgColor, command=lambda: AddBox(addButton, db, table, addDictionary))
         if table == "orders":
-            addButton.configure(command=lambda: AddOrdersBox(addButton))
+            addButton.configure(command=lambda: AddOrdersBox(addButton, table))
+        if table == "carts":
+            addButton.configure(command=lambda: AddOrdersBox(addButton, table))
         addButton.grid(row=0, column=0, sticky="w", padx=(10, 0))
         refreshButton = tk.Button(buttonsFrame, image=self.refreshIcon, relief=tk.SUNKEN, borderwidth=0,
                                   background=bgColor,
