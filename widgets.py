@@ -436,6 +436,7 @@ class EditBox:
         root.protocol("WM_DELETE_WINDOW", lambda: close())
         root.title("Edytuj")
 
+        combosIndexes = []
 
 
         splittedToRows = str(objectToDisplay).split("\n")
@@ -449,15 +450,27 @@ class EditBox:
                     for i in item:
                         tmp.append(splittedToRows[i])
                     splittedToRows=tmp
+
+            if key == "combos":
+                if type(item) == int:
+                    combosIndexes.append(item)
+                else:
+                    for i in item:
+                        combosIndexes.append(i)
         counter = 0
         for row in splittedToRows:
+            if counter in combosIndexes:
+                entry = ttk.Combobox(root, values=db.getEnum("order_status"))
+                entry.grid(row=counter, column=2)
+            else:
+                entry = ttk.Entry(root)
+                entry.grid(row=counter, column=2)
             row1 = row.split(": ")
             ttk.Label(root, text=row1[0] + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
                                                                                               sticky="nw")
             ttk.Label(root, text=row1[1], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=1,
                                                                                               sticky="nw")
-            entry = ttk.Entry(root)
-            entry.grid(row=counter, column=2)
+
             button = tk.Button(root, text="Edytuj...")
             button.configure(command=lambda buttonToPass=button, rowToPass=row1, entryToPass=entry: MessageBox(
                 'Czy na pewno chcesz zmienić wartość elementu ' + rowToPass[0] + ' z ' + rowToPass[
@@ -634,7 +647,11 @@ class WidgetList:
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                    activebackground=bgColor)
             idForButton = str(columns[0].cget("text"))
-            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=indexes))
+            if table == "orders":
+                editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user,
+                                                                                  indexes=indexes, combos=0))
+            else:
+                editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=indexes))
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
