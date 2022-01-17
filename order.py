@@ -14,10 +14,17 @@ class Order:
          self.user] = [self.db.fetchAll("orders", ("order_status", "order_date", "delivery_date", "login"),
                                         add="INNER JOIN users USING (user_id) WHERE order_id = " + str(id))[0][i] for i
                        in range(4)]
+        self.products = self.db.fetchAll("products", ("name", "amount"),
+                                         add="INNER JOIN ordered_products USING(product_id) WHERE order_id = " + str(self.id))
 
     def __str__(self):
-        return "ID: " + str(self.id) + "\n" + \
-               "Utworzone przez: " + str(self.user) + "\n" + \
-               "Data zamówienia: " + str(self.orderDate) + "\n" + \
-               "Status zamówienia: " + str(self.orderStatus) + "\n" + \
-               "Data dostarczenia: " + str(self.deliveryDate)
+        string = "ID: " + str(self.id) + "\n" + \
+                 "Utworzone przez: " + str(self.user) + "\n" + \
+                 "Data zamówienia: " + str(self.orderDate) + "\n" + \
+                 "Status zamówienia: " + str(self.orderStatus) + "\n" + \
+                 "Data dostarczenia: " + str(self.deliveryDate)
+        counter = 1
+        for p in self.products:
+            string += "\nProdukt " + str(counter) + ": " + str(p[0]) + " x " + str(p[1])
+            counter += 1
+        return string

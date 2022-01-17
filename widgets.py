@@ -339,6 +339,7 @@ class AddOrdersBox:
                        relief=tk.RIDGE)
         root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Dodaj")
 
         ttk.Label(root, text="Wybierz ilość rodzajów produktów:", background=bgColor, font=("Roboto Light", 12)).grid(
             row=0, column=0)
