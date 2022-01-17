@@ -420,7 +420,6 @@ class EditBox:
         objectToDisplay = ""
         if name == "products":
             objectToDisplay = Product(db, id, user.dept_id)
-            root.title(objectToDisplay.name)
         elif name == "users":
             objectToDisplay = User(db, id)
         elif name == "orders":
@@ -443,9 +442,13 @@ class EditBox:
         for key, item in kwargs.items():
             if key == "indexes":
                 tmp=[]
-                for i in item:
-                    tmp.append(splittedToRows[i])
-                splittedToRows=tmp
+                if type(item) == int:
+                    tmp.append(splittedToRows[item])
+                    splittedToRows = tmp
+                else:
+                    for i in item:
+                        tmp.append(splittedToRows[i])
+                    splittedToRows=tmp
         counter = 0
         for row in splittedToRows:
             row1 = row.split(": ")
@@ -493,7 +496,10 @@ class WidgetList:
                 if key == "add":
                     addition = item
             self.itemList = db.fetchAll(table, columnNames, add=addition)
-            indexes = (1, 2, 3, 4, 5, 6, 7)
+            if table == "orders":
+                indexes = 3
+            else:
+                indexes = (1, 2, 3, 4, 5, 6, 7)
         self.itemList.sort()
         self.iterator = 25
         if len(self.itemList) < self.iterator:
