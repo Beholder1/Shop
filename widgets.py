@@ -375,6 +375,7 @@ class AddBox:
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
         root.resizable(False, False)
+        root.title("Dodaj")
 
         root.protocol("WM_DELETE_WINDOW", lambda: close())
 
@@ -426,6 +427,7 @@ class EditBox:
                        relief=tk.RIDGE)
         root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Edytuj")
 
 
 
@@ -477,11 +479,13 @@ class WidgetList:
         self.startingIndex = 0
         if table == "users":
             self.itemList = db.fetchEmployeesAdmin(user.id, columnNames)
+            indexes = (1,2,3,4,5,6)
         else:
             for key, item in kwargs.items():
                 if key == "add":
                     addition = item
             self.itemList = db.fetchAll(table, columnNames, add=addition)
+            indexes = (1, 2, 3, 4, 5, 6, 7)
         self.itemList.sort()
         self.iterator = 25
         if len(self.itemList) < self.iterator:
@@ -616,7 +620,7 @@ class WidgetList:
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                    activebackground=bgColor)
             idForButton = str(columns[0].cget("text"))
-            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=(1,2,3,4,5,6,7)))
+            editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=indexes))
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
