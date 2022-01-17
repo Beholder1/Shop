@@ -448,9 +448,9 @@ class EditBox:
             entry = ttk.Entry(root)
             entry.grid(row=counter, column=2)
             button = tk.Button(root, text="Edytuj...")
-            button.configure(command=lambda buttonToPass=button, rowToPass=row1: MessageBox(
-                'Czy na pewno chcesz zmienić wartość elementu "' + rowToPass[0] + '" z "' + rowToPass[
-                    1] + '" na "' + str(entry.get()) + '"?', buttonToPass, print(1), "Edytuj"))
+            button.configure(command=lambda buttonToPass=button, rowToPass=row1, entryToPass=entry: MessageBox(
+                'Czy na pewno chcesz zmienić wartość elementu ' + rowToPass[0] + ' z ' + rowToPass[
+                    1] + ' na ' + str(entryToPass.get()) + '?', buttonToPass, print(1), "Edytuj"))
             button.grid(row=counter, column=3, sticky="w")
             counter += 1
 
