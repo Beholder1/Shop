@@ -325,7 +325,7 @@ class AddOrdersBox:
 
         def command(amount):
             for i in range(int(amount)):
-                ttk.Label(root, text="Produkt " + str(i) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1, column=0)
+                ttk.Label(root, text="Produkt " + str(i+1) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1, column=0)
                 entries.append(ttk.Entry(root))
                 entries[i].grid(row=i+1, column=1)
                 ttk.Label(root, text="Ilość: ", background=bgColor, font=("Roboto Light", 12)).grid(
