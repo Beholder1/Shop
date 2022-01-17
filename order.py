@@ -22,7 +22,8 @@ class Order:
                  "Utworzone przez: " + str(self.user) + "\n" + \
                  "Data zamówienia: " + str(self.orderDate) + "\n" + \
                  "Status zamówienia: " + str(self.orderStatus) + "\n" + \
-                 "Data dostarczenia: " + str(self.deliveryDate)
+                 "Data dostarczenia: " + str(self.deliveryDate) + "\n" + \
+                 "\nZawartość zamówienia"
         counter = 1
         for p in self.products:
             string += "\nProdukt " + str(counter) + ": " + str(p[0]) + " x " + str(p[1])
