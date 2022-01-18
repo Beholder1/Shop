@@ -282,7 +282,6 @@ class DisplayBox:
 
         bgColor = "white"
 
-
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
         ttk.Label(root, text=objectToDisplay, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
@@ -325,21 +324,20 @@ class AddOrdersBox:
 
         def command(amount):
             for i in range(int(amount)):
-                ttk.Label(root, text="Produkt " + str(i+1) + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=i+1+add, column=0)
+                ttk.Label(root, text="Produkt " + str(i + 1) + ":", background=bgColor, font=("Roboto Light", 12)).grid(
+                    row=i + 1 + add, column=0)
                 entries.append(ttk.Entry(root))
-                entries[i].grid(row=i+1+add, column=1)
+                entries[i].grid(row=i + 1 + add, column=1)
                 ttk.Label(root, text="Ilość: ", background=bgColor, font=("Roboto Light", 12)).grid(
-                    row=i + 1+add, column=2)
+                    row=i + 1 + add, column=2)
                 entries1.append(ttk.Entry(root))
-                entries1[i].grid(row=i + 1+add, column=3)
-            tk.Button(root, text="Dodaj").grid(row=i+2+add, column=1)
+                entries1[i].grid(row=i + 1 + add, column=3)
+            tk.Button(root, text="Dodaj").grid(row=i + 2 + add, column=1)
 
         entries = []
         entries1 = []
         bgColor = "white"
         buttonColor = "#0589CF"
-
-
 
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
@@ -356,13 +354,12 @@ class AddOrdersBox:
                 row=0, column=0)
             entry = ttk.Entry(root)
             entry.grid(row=0, column=1)
-            add=1
+            add = 1
         ttk.Label(root, text="Wybierz ilość rodzajów produktów:", background=bgColor, font=("Roboto Light", 12)).grid(
-            row=0+add, column=0)
+            row=0 + add, column=0)
         entry = ttk.Entry(root)
-        entry.grid(row=0+add, column=1)
-        tk.Button(root, text="Zatwierdź", command=lambda: command(entry.get())).grid(row=0+add, column=2)
-
+        entry.grid(row=0 + add, column=1)
+        tk.Button(root, text="Zatwierdź", command=lambda: command(entry.get())).grid(row=0 + add, column=2)
 
 
 class AddBox:
@@ -447,18 +444,17 @@ class EditBox:
 
         combosIndexes = []
 
-
         splittedToRows = str(objectToDisplay).split("\n")
         for key, item in kwargs.items():
             if key == "indexes":
-                tmp=[]
+                tmp = []
                 if type(item) == int:
                     tmp.append(splittedToRows[item])
                     splittedToRows = tmp
                 else:
                     for i in item:
                         tmp.append(splittedToRows[i])
-                    splittedToRows=tmp
+                    splittedToRows = tmp
 
             if key == "combos":
                 if type(item) == int:
@@ -475,8 +471,9 @@ class EditBox:
                 entry = ttk.Entry(root)
                 entry.grid(row=counter, column=2)
             row1 = row.split(": ")
-            ttk.Label(root, text=row1[0] + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
-                                                                                              sticky="nw")
+            ttk.Label(root, text=row1[0] + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter,
+                                                                                                    column=0,
+                                                                                                    sticky="nw")
             ttk.Label(root, text=row1[1], background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=1,
                                                                                               sticky="nw")
 
@@ -512,7 +509,7 @@ class WidgetList:
         self.startingIndex = 0
         if table == "users":
             self.itemList = db.fetchEmployeesAdmin(user.id, columnNames)
-            indexes = (1,2,3,4,5,6)
+            indexes = (1, 2, 3, 4, 5, 6)
         else:
             for key, item in kwargs.items():
                 if key == "add":
@@ -662,7 +659,8 @@ class WidgetList:
                 editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user,
                                                                                   indexes=indexes, combos=0))
             else:
-                editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user, indexes=indexes))
+                editButton.configure(command=lambda idToPass=idForButton: EditBox(db, editButton, table, idToPass, user,
+                                                                                  indexes=indexes))
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,

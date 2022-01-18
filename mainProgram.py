@@ -5,6 +5,7 @@ from widgets import AutocompleteCombobox, SidebarMenu, WidgetList, OnlyMessageBo
 import pyglet
 from datetime import datetime
 from tkcalendar import Calendar
+import xlsxwriter
 
 
 class MainProgram:
@@ -122,6 +123,25 @@ class MainProgram:
             WidgetList(frame5, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user,
                        "Pracownicy", userDictionary)
 
+            def generateExcel(date1, date2):
+                data = db.getReport(user.dept_id, date1, date2)
+                workbook = xlsxwriter.Workbook("Raport " + date1.replace("/", ".") + " - " + date2.replace("/", ".") + ".xlsx")
+                worksheet = workbook.add_worksheet("Raport")
+                worksheet.write(0, 0, "Użytkownik")
+                worksheet.write(0, 1, "Nazwa produktu")
+                worksheet.write(0, 2, "Ilość")
+                worksheet.write(0, 3, "Zysk")
+                row = 1
+                for d in data:
+                    worksheet.write(row, 0, d[0])
+                    worksheet.write(row, 1, d[1])
+                    worksheet.write(row, 2, d[2])
+                    worksheet.write(row, 3, d[3])
+                    row += 1
+
+                workbook.close()
+
+
             # Raporty
             frame6 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame6.grid(row=0, column=1, sticky="nwse")
@@ -139,7 +159,7 @@ class MainProgram:
                headersbackground="#d8edf8", normalbackground="white", foreground='white',
                normalforeground='black', headersforeground='black')
             dateEnd.grid(row=1, column=2)
-            tk.Button(frame6Content, text="Pokaż raport").grid(row=2, column=1)
+            tk.Button(frame6Content, text="Pokaż raport", command=lambda: generateExcel(dateStart.get_date(), dateEnd.get_date())).grid(row=2, column=1)
 
             frame0 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame0.grid(row=0, column=1, sticky="nwse")

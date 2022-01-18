@@ -143,6 +143,12 @@ class Database:
             self.cur.execute("UPDATE users SET manager_id = " + str(menedzer) + " WHERE user_id = " + str(p[0]))
             self.conn.commit()
 
+    def getReport(self, dept_id, dateStart, dateEnd):
+        self.cur.execute(
+            "SELECT login, name, SUM(amount), ROUND(SUM(amount*(price * (1-tax_rate) - purchase_price))::numeric, 2) FROM carts INNER JOIN users USING(user_id) INNER JOIN products_in_carts USING(cart_id) INNER JOIN products USING (product_id) INNER JOIN departments USING (dept_id) INNER JOIN locations USING (location_id) INNER JOIN tax_rates USING(tax_rate_id) WHERE purchase_date BETWEEN TO_DATE('" + str(dateStart) + "','MM/DD/YY') AND TO_DATE('" + str(dateEnd) + "','MM/DD/YY') AND dept_id = " + str(dept_id) + " AND order_status <> 'nieopłacono' GROUP BY ROLLUP(login, name) ORDER BY login, name")
+        data = self.cur.fetchall()
+        return data
+
     def tmp1(self):
         self.cur.execute("SELECT user_id, salary from users")
         salary = self.cur.fetchall()
