@@ -15,7 +15,6 @@ def createLogin(name, lastName):
         login = login + lastName
     return login
 
-
 class User:
     def __init__(self, db, id):
         self.db = db
