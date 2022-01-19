@@ -43,14 +43,14 @@ class Product:
         AddBox(button, self.db, self.tableName, addDictionary)
 
     def delete(self, button):
-        MessageBox("Czy na pewno chcesz usunąć element o id = " + self.id + "?", button,
+        MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button,
                    lambda: self.db.delete(self.tableName, "product_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.tableName, self.id, self.deptId, indexes=3, combos=0)
+        EditBox(self.db, button, self.__str__(), indexes=(1,2,3,4,5,6,7))
 
     def display(self):
-        DisplayBox(self.db, self.tableName, self.id, self.deptId)
+        DisplayBox(self.db, self.tableName, self.id, self.deptId, self.__str__())
 
     def __str__(self):
         return "Id: " + str(self.id) + "\n" + \

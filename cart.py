@@ -24,21 +24,21 @@ class Cart:
         AddOrdersBox(button, self.tableName)
 
     def delete(self, button):
-        MessageBox("Czy na pewno chcesz usunąć element o id = " + self.id + "?", button, lambda: self.db.delete(self.tableName, "cart_id", self.id), "Usuń")
+        MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button, lambda: self.db.delete(self.tableName, "cart_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.tableName, self.id, self.user, indexes=3, combos=0)
+        EditBox(self.db, button, self.__str__(), indexes=4, combos=0)
 
     def display(self):
-        DisplayBox(self.db, self.tableName, self.id, self.user)
+        DisplayBox(self.db, self.tableName, self.id, self.user, self.__str__())
 
     def __str__(self):
         string = "ID: " + str(self.id) + "\n" + \
-               "Utworzone przez: " + str(self.user) + "\n" + \
-               "Klient: " + str(self.client) + "\n" + \
-               "Data zamówienia: " + str(self.date) + "\n" + \
-               "Status zamówienia: " + str(self.status) + "\n" + \
-               "Metoda płatności: " + str(self.paymentMethod) + "\n" + \
+                 "Utworzone przez: " + str(self.user) + "\n" + \
+                 "Klient: " + str(self.client) + "\n" + \
+                 "Data zamówienia: " + str(self.date) + "\n" + \
+                 "Status zamówienia: " + str(self.status) + "\n" + \
+                 "Metoda płatności: " + str(self.paymentMethod) + "\n" + \
                  "\nZawartość zamówienia"
 
         counter = 1

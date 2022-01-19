@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-#from widgets import AutocompleteCombobox
-from datetime import datetime
+from widgets import MessageBox
+from widgets import EditBox
+from widgets import AddBox
+from widgets import DisplayBox
 
 
 def createLogin(name, lastName):
@@ -17,6 +19,7 @@ def createLogin(name, lastName):
 
 class User:
     def __init__(self, db, id):
+        self.tableName = "users"
         self.db = db
         self.id = id
         [self.login,
@@ -32,7 +35,7 @@ class User:
          self.creationDate,
          self.lastLogin,
          self.isBlocked,
-         self.employerId] = [self.db.fetch("users", "*", "user_id", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
+         self.employerId] = [self.db.fetch(self.tableName, "*", "user_id", id)[i] for i in (1, 13, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14)]
 
     def accountConfigureBox(self, column, popButton):
         def edit():
@@ -70,42 +73,31 @@ class User:
         entry1.grid(row=1, column=1)
         tk.Button(frame, text="Zatwierdź", command=edit).grid(row=2, column=1)
 
-    def addUser(self, frame):
-        ttk.Label(frame, text="Imię: ").grid(row=0, column=0, sticky="w")
-        entryEmployeeName = ttk.Entry(frame)
-        entryEmployeeName.grid(row=0, column=1, sticky="w")
+    def add(self, button):
+        addDictionary = {
+            "Imię": "first_name",
+            "Nazwisko": "last_name",
+            "Pesel": "pesel",
+            "Pensja": "salary",
+            "Email": "email",
+            "Telefon": "phone_number",
+        }
+        AddBox(button, self.db, self.tableName, addDictionary)
 
-        ttk.Label(frame, text="Nazwisko: ").grid(row=1, column=0, sticky="w")
-        entryEmployeeLastName = ttk.Entry(frame)
-        entryEmployeeLastName.grid(row=1, column=1, sticky="w")
+    def delete(self, button):
+        MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button,
+                   lambda: self.db.delete(self.tableName, "product_id", self.id), "Usuń")
 
-        ttk.Label(frame, text="PESEL: ").grid(row=2, column=0, sticky="w")
-        entryEmployeePesel = ttk.Entry(frame)
-        entryEmployeePesel.grid(row=2, column=1, sticky="w")
+    def edit(self, button):
+        EditBox(self.db, button, self.__str__(), indexes=(1, 2, 3, 5, 6, 7))
 
-        ttk.Label(frame, text="Email: ").grid(row=3, column=0, sticky="w")
-        entryEmployeeEmail = ttk.Entry(frame)
-        entryEmployeeEmail.grid(row=3, column=1, sticky="w")
+    def display(self):
+        DisplayBox(self.db, self.tableName, self.id, self.dept_id, self.__str__())
 
-        ttk.Label(frame, text="Pensja: ").grid(row=4, column=0, sticky="w")
-        entryEmployeeSalary = ttk.Entry(frame)
-        entryEmployeeSalary.grid(row=4, column=1, sticky="w")
-
-        addEmployeeButton = tk.Button(frame, text="Dodaj",
-                                      command=lambda: self.db.insertUser(self.dept_id,
-                                                                         createLogin(entryEmployeeName.get(),
-                                                                                     entryEmployeeLastName.get()),
-                                                                         entryEmployeePesel.get(), "pracownik",
-                                                                         entryEmployeeEmail.get(),
-                                                                         entryEmployeeName.get(),
-                                                                         entryEmployeeLastName.get(),
-                                                                         entryEmployeeSalary.get(),
-                                                                         entryEmployeePesel.get(), datetime.now(),
-                                                                         self.id))
-        addEmployeeButton.grid(row=5, column=1)
 
     def __str__(self):
-        return "Login: " + str(self.login) + "\n" + \
+        return "Id: " + str(self.id) + "\n" + \
+               "Login: " + str(self.login) + "\n" + \
                "Imię: " + str(self.name) + "\n" + \
                "Nazwisko: " + str(self.last_name) + "\n" + \
                "Stanowisko: " + str(self.role) + "\n" + \

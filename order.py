@@ -22,17 +22,17 @@ class Order:
         self.products = self.db.fetchAll("products", ("name", "amount"),
                                          add="INNER JOIN ordered_products USING(product_id) WHERE order_id = " + str(self.id))
 
-    def add(self, button):
-        AddOrdersBox(button, self.tableName)
+    def add(self, button, userId):
+        AddOrdersBox(self.db, button, self.tableName, userId)
 
     def delete(self, button):
-        MessageBox("Czy na pewno chcesz usunąć element o id = " + self.id + "?", button, lambda: self.db.delete(self.tableName, "order_id", self.id), "Usuń")
+        MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button, lambda: self.db.delete(self.tableName, "order_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.tableName, self.id, self.user, indexes=3, combos=0)
+        EditBox(self.db, button, self.__str__(), indexes=3, combos=0)
 
     def display(self):
-        DisplayBox(self.db, self.tableName, self.id, self.user)
+        DisplayBox(self.db, self.tableName, self.id, self.user, self.__str__())
 
     def __str__(self):
         string = "ID: " + str(self.id) + "\n" + \

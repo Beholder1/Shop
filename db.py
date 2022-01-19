@@ -113,8 +113,7 @@ class Database:
             "DELETE FROM " + table + " WHERE " + column + " = '" + value + "'")
         self.conn.commit()
 
-    def insertProducts(self):
-        list = [[1, 4], [2, 9], [3, 3]]
+    def insertProducts(self, list, userId):
         self.cur.execute("select add_order(ARRAY" + str(list) + ", 1)")
         self.conn.commit()
 

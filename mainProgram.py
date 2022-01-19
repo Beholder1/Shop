@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from user import User
-from widgets import AutocompleteCombobox, SidebarMenu, WidgetList, OnlyMessageBox
+from widgets import AutocompleteCombobox, SidebarMenu, OnlyMessageBox
+from WidgetList import WidgetList
 import pyglet
 from datetime import datetime
 from tkcalendar import Calendar
@@ -42,12 +43,12 @@ class MainProgram:
                 ttk.Label(frame1, text=singleInfo).grid(row=counter, column=0, sticky="w")
                 counter += 1
             emailButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("email", emailButton))
-            emailButton.grid(row=4, column=1, sticky="w")
+            emailButton.grid(row=5, column=1, sticky="w")
             phoneButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("phone_number", phoneButton))
-            phoneButton.grid(row=5, column=1, sticky="w")
-            ttk.Label(frame1, text="Hasło: ").grid(row=8, column=0, sticky="w")
+            phoneButton.grid(row=6, column=1, sticky="w")
+            ttk.Label(frame1, text="Hasło: ").grid(row=9, column=0, sticky="w")
             passwordButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("password", passwordButton))
-            passwordButton.grid(row=8, column=1, sticky="w")
+            passwordButton.grid(row=9, column=1, sticky="w")
 
             # Produkty
             frame2 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
@@ -55,20 +56,10 @@ class MainProgram:
             frame2.grid(row=0, column=1, sticky="nwse")
             frame2.grid_propagate(False)
 
-            productDictionary = {
-                "Nazwa": "name",
-                "Producent": "mark",
-                "Kategoria": "category",
-                "Cena zakupu": "purchase_price",
-                "Cena sprzedaży": "price",
-                "Jednostka": "amount_type",
-                "Podatek": "tax_rateX"
-            }
-
             products = ("Id", "Nazwa", "Producent", "Cena zakupu", "Cena sprzedaży")
             WidgetList(frame2, db, "products", ("product_id", "name", "marks.mark", "purchase_price", "price"),
                        products,
-                       user, "Produkty", productDictionary, add="INNER JOIN marks USING (mark_id)",)
+                       user, "Produkty", add="INNER JOIN marks USING (mark_id)",)
 
             # Dostawy
             frame3 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
@@ -76,19 +67,9 @@ class MainProgram:
             frame3.grid(row=0, column=1, sticky="nwse")
             frame3.grid_propagate(False)
 
-            orderDictionary = {
-                "Nazwa": "name",
-                "Producent": "mark",
-                "Kategoria": "category",
-                "Cena zakupu": "purchase_price",
-                "Cena sprzedaży": "price",
-                "Jednostka": "amount_type",
-                "Podatek": "tax_rate"
-            }
-
             orders = ("Id", "Status", "Data złożenia", "Data dostarczenia", "Użytkownik")
             WidgetList(frame3, db, "orders", ("order_id", "order_status", "order_date", "delivery_date", "users.login"),
-                       orders, user, "Dostawy", orderDictionary, add="INNER JOIN users USING (user_id)")
+                       orders, user, "Dostawy", add="INNER JOIN users USING (user_id)")
 
             # Zamówienia
             frame4 = tk.Frame(root, height=root.winfo_height(), width=root.winfo_width(), bg=bgColor, borderwidth=1,
@@ -103,25 +84,16 @@ class MainProgram:
 
             WidgetList(frame4, db, "carts", ("cart_id", "purchase_date", "order_status", "login",
                                              "concat(clients.first_name, ' ', clients.last_name)"),
-                       cart, user, "Zamówienia", cartDictionary,
+                       cart, user, "Zamówienia",
                        add="INNER JOIN users USING (user_id) INNER JOIN clients USING (client_id)")
 
             # Pracownicy
             frame5 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame5.grid(row=0, column=1, sticky="nwse")
 
-            userDictionary = {
-                "Imię": "first_name",
-                "Nazwisko": "last_name",
-                "Pesel": "pesel",
-                "Pensja": "salary",
-                "Email": "email",
-                "Telefon": "phone_number",
-            }
-
             users = ("Id", "Imię", "Nazwisko", "Pensja", "Ostatnio zalogowany")
             WidgetList(frame5, db, "users", ("user_id", "first_name", "last_name", "salary", "last_login"), users, user,
-                       "Pracownicy", userDictionary)
+                       "Pracownicy")
 
             def generateExcel(date1, date2):
                 data = db.getReport(user.dept_id, date1, date2)
