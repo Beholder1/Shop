@@ -215,12 +215,13 @@ class SidebarMenu:
 class MessageBox:
     def __init__(self, text, popButton, commandPassed, title):
         def command():
+            popButton.config(state="normal")
             self.root.destroy()
             commandPassed()
 
         def close():
-            self.root.destroy()
             popButton.config(state="normal")
+            self.root.destroy()
 
         bgColor = "white"
         buttonColor = "#0589CF"
@@ -311,8 +312,12 @@ class AddOrdersBox:
             list = []
             counter=0
             for i in entries:
-                list.append([entries[counter], entries1[counter]])
-            db.insert(list, userId)
+                list.append([int(entries[counter].get()), int(entries1[counter].get())])
+                counter+=1
+            if name == "carts":
+                db.insertCart(list, userId, combo.get(), entry0.get(), entry1.get(), entry2.get(), entry3.get(), entry4.get(), entry5.get(), entry6.get(), entry7.get())
+            else:
+                db.insertProducts(list, userId)
 
         def command(amount):
             for i in range(int(amount)):
@@ -341,12 +346,63 @@ class AddOrdersBox:
         root.title("Dodaj")
         add = 0
         if name == "carts":
-            ttk.Label(root, text="Klient:", background=bgColor,
+            ttk.Label(root, text="Imię:", background=bgColor,
                       font=("Roboto Light", 12)).grid(
                 row=0, column=0)
-            entry = ttk.Entry(root)
-            entry.grid(row=0, column=1)
-            add = 1
+            entry0 = ttk.Entry(root)
+            entry0.grid(row=0, column=1)
+
+            ttk.Label(root, text="Nazwisko:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=1, column=0)
+            entry1 = ttk.Entry(root)
+            entry1.grid(row=1, column=1)
+
+            ttk.Label(root, text="Państwo:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=2, column=0)
+            entry2 = ttk.Entry(root)
+            entry2.grid(row=2, column=1)
+
+            ttk.Label(root, text="Województwo:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=3, column=0)
+            entry3 = ttk.Entry(root)
+            entry3.grid(row=3, column=1)
+
+            ttk.Label(root, text="Miasto:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=4, column=0)
+            entry4 = ttk.Entry(root)
+            entry4.grid(row=4, column=1)
+
+            ttk.Label(root, text="Kod pocztowy:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=5, column=0)
+            entry5 = ttk.Entry(root)
+            entry5.grid(row=5, column=1)
+
+            ttk.Label(root, text="Ulica:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=6, column=0)
+            entry6 = ttk.Entry(root)
+            entry6.grid(row=6, column=1)
+
+            ttk.Label(root, text="Numer ulicy:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=7, column=0)
+            entry7 = ttk.Entry(root)
+            entry7.grid(row=7, column=1)
+
+            ttk.Label(root, text="Metoda płatności:", background=bgColor,
+                      font=("Roboto Light", 12)).grid(
+                row=8, column=0)
+            li = []
+            for i in db.getEnum("payment_method"):
+                li.append(i)
+            combo = ttk.Combobox(root, values=li)
+            combo.grid(row=8, column=1)
+            add = 9
         ttk.Label(root, text="Wybierz ilość rodzajów produktów:", background=bgColor, font=("Roboto Light", 12)).grid(
             row=0 + add, column=0)
         entry = ttk.Entry(root)
@@ -355,17 +411,24 @@ class AddOrdersBox:
 
 
 class AddBox:
-    def __init__(self, popButton, db, table, names):
+    def __init__(self, popButton, db, table, names, **kwargs):
         def command():
-            flag = True
+            flag1 = True
             for entry in entries:
                 if entry.get() == '':
                     entry.configure()
                     errorLabel.configure(text="Wypełnij wszystkie wymagane pola")
-                    flag = False
-            if flag:
+                    flag1 = False
+            if flag1:
+                t = []
+                v = 0
+                for e in entries:
+                    if entries.index(e) == k[v][0]:
+                        t.append(db.fetchAll(str(fetch[v][1]), str(fetch[v][3]), add="WHERE "+str(fetch[v][2])+" = '"+str(e.get())+"'")[0][0])
+                    else:
+                        t.append(e.get())
                 popButton.config(state="normal")
-                db.insert(table, entries)
+                db.insert(table, t)
                 root.destroy()
 
         def close():
@@ -374,6 +437,11 @@ class AddBox:
 
         bgColor = "white"
         buttonColor = "#0589CF"
+
+        fetch = []
+        for key, item in kwargs.items():
+            if key == "fetch":
+                fetch = item
 
         pyglet.font.add_file('Roboto-Light.ttf')
         popButton.config(state="disabled")
@@ -387,7 +455,10 @@ class AddBox:
 
         entries = []
         counter = 0
+        k=[]
+        c = 0
         for key, value in names.items():
+            flag = False
             if value[-1] != "X":
                 entry = ttk.Entry(root)
                 entry.grid(row=counter, column=1, sticky="w")
@@ -395,11 +466,24 @@ class AddBox:
                 entry = ttk.Combobox(root)
                 entry.grid(row=counter, column=1, sticky="w")
                 value = value[:-1]
-                entry.configure(values=db.fetchAll("tax_rates", "tax_rate"))
+                if fetch[c][0] == "d":
+                    l1 = []
+                    for i in db.fetchAll(fetch[c][1], fetch[c][2]):
+                        l1.append(i[0])
+                    entry.configure(values=l1)
+                    flag = True
+                else:
+                    l1 = []
+                    for i in db.getEnum(fetch[c][1]):
+                        l1.append(i)
+                    entry.configure(values=l1)
+                c+=1
             ttk.Label(root, text=key + ":", background=bgColor, font=("Roboto Light", 12)).grid(row=counter, column=0,
                                                                                                 sticky="w")
             counter += 1
             entries.append(entry)
+            if flag:
+                k.append((entries.index(entry), c))
 
         errorLabel = ttk.Label(root, text="", foreground="red", background=bgColor, font=("Roboto Light", 8))
         errorLabel.grid(row=len(entries), column=0, sticky="w")
@@ -463,7 +547,7 @@ class EditBox:
             button = tk.Button(root, text="Edytuj...")
             button.configure(command=lambda buttonToPass=button, rowToPass=row1, entryToPass=entry: MessageBox(
                 'Czy na pewno chcesz zmienić wartość elementu ' + rowToPass[0] + ' z ' + rowToPass[
-                    1] + ' na ' + str(entryToPass.get()) + '?', buttonToPass, print(1), "Edytuj"))
+                    1] + ' na ' + str(entryToPass.get()) + '?', buttonToPass, db.s, "Edytuj"))
             button.grid(row=counter, column=3, sticky="w")
             counter += 1
 

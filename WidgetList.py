@@ -12,6 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime
 import dateutil.relativedelta
 
+
 class WidgetList:
     def __init__(self, framePassed, db, table, columnNames, names, user, title, **kwargs):
 
@@ -28,7 +29,11 @@ class WidgetList:
 
             if operation == "add" and table == "orders":
                 itemObject.add(button, user.id)
-            elif operation == "add" and table != "orders":
+            elif operation == "add" and table == "carts":
+                itemObject.add(button, user.id)
+            elif operation == "add" and table == "users":
+                user.add(button)
+            elif operation == "add":
                 itemObject.add(button)
             elif operation == "display":
                 itemObject.display()
@@ -36,7 +41,6 @@ class WidgetList:
                 itemObject.delete(button)
             elif operation == "edit":
                 itemObject.edit(button)
-
 
         self.addIcon = tk.PhotoImage(file='icons/add.png')
         self.refreshIcon = tk.PhotoImage(file='icons/refresh.png')
@@ -60,26 +64,24 @@ class WidgetList:
         self.startingIndex = 0
         if table == "users":
             self.itemList = db.fetchEmployeesAdmin(user.id, columnNames)
-            indexes = (1, 2, 3, 4, 5, 6)
         else:
             for key, item in kwargs.items():
                 if key == "add":
                     addition = item
             self.itemList = db.fetchAll(table, columnNames, add=addition)
-            if table == "orders":
-                indexes = 3
-            else:
-                indexes = (1, 2, 3, 4, 5, 6, 7)
+
         self.itemList.sort()
         self.iterator = 25
-        if len(self.itemList) < self.iterator:
-            self.rangeEnd = len(self.itemList)
-        else:
-            self.rangeEnd = self.iterator + self.startingIndex
+
+        self.rangeEnd = self.iterator + self.startingIndex
         self.labels = []
 
         self.sortingMethod = 0
         self.reverse = False
+
+        if len(self.itemList) % self.iterator != 0:
+            for i in range(self.iterator - len(self.itemList) % self.iterator):
+                self.itemList
 
         buttonsFrame = tk.Frame(frame, background=bgColor)
         buttonsFrame.grid(row=0, column=0, sticky="w")
@@ -137,18 +139,39 @@ class WidgetList:
                 self.rangeEnd = self.iterator
                 self.startingIndex = 0
             if choice == "refresh":
-                self.itemList = db.fetchAll(table, columnNames, add=addition)
-                self.itemList.sort(key=lambda x: x[self.sortingMethod])
+                if table == "users":
+                    self.itemList = db.fetchEmployeesAdmin(user.id, columnNames)
+                    self.itemList.sort(key=lambda x: x[self.sortingMethod])
+                else:
+                    self.itemList = db.fetchAll(table, columnNames, add=addition)
+                    self.itemList.sort(key=lambda x: x[self.sortingMethod])
                 index -= self.iterator - 1
             counter = index
             for widget in self.labels:
-                for label in range(5):
-                    widget[label].configure(text=self.itemList[counter][label])
-                widget[5].configure(
-                    command=lambda idToPass=widget[0].cget("text"): objectOperation(idToPass, "display", widget[5]))
-                widget[6].configure(command=lambda idToPass=widget[0].cget("text"), thisButton=widget[6]: objectOperation(idToPass, "edit", thisButton))
-                widget[7].configure(command=lambda idToPass=widget[0].cget("text"), thisButton=widget[7]: objectOperation(idToPass, "delete", thisButton))
-                counter += 1
+                try:
+                    for label in range(5):
+                        widget[label].configure(text=self.itemList[counter][label])
+                    widget[5].configure(
+                        command=lambda idToPass=widget[0].cget("text"): objectOperation(idToPass, "display", widget[5]),
+                        state="normal", image=self.displayIcon)
+                    widget[6].configure(
+                        command=lambda idToPass=widget[0].cget("text"), thisButton=widget[6]: objectOperation(idToPass,
+                                                                                                              "edit",
+                                                                                                              thisButton),
+                        state="normal", image=self.editIcon)
+                    widget[7].configure(
+                        command=lambda idToPass=widget[0].cget("text"), thisButton=widget[7]: objectOperation(idToPass,
+                                                                                                              "delete",
+                                                                                                              thisButton),
+                        state="normal", image=self.deleteIcon)
+                    counter += 1
+                except IndexError:
+                    for label in range(5):
+                        widget[label].configure(text=" ")
+                    widget[5].configure(state="disabled", image="")
+                    widget[6].configure(state="disabled", image="")
+                    widget[7].configure(state="disabled", image="")
+                    counter += 1
             if choice == "start":
                 self.rangeEnd = self.iterator
                 self.startingIndex = 0
@@ -191,20 +214,25 @@ class WidgetList:
             displayButton = tk.Button(frame, image=self.displayIcon, relief=tk.SUNKEN, borderwidth=0,
                                       background=bgColor,
                                       activebackground=bgColor,
-                                      command=lambda idToPass=self.itemList[self.startingIndex][0]: objectOperation(idToPass, "display", displayButton))
+                                      command=lambda idToPass=self.itemList[self.startingIndex][0]: objectOperation(
+                                          idToPass, "display", displayButton))
             displayButton.grid(row=row, column=5, sticky="nwse")
             columns.append(displayButton)
             editButton = tk.Button(frame, image=self.editIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                    activebackground=bgColor)
             idForButton = str(columns[0].cget("text"))
 
-            editButton.configure(command=lambda idToPass=idForButton, thisButton=editButton: objectOperation(idToPass, "edit", thisButton))
+            editButton.configure(
+                command=lambda idToPass=idForButton, thisButton=editButton: objectOperation(idToPass, "edit",
+                                                                                            thisButton))
 
             editButton.grid(row=row, column=6, sticky="nwse")
             columns.append(editButton)
             deleteButton = tk.Button(frame, image=self.deleteIcon, relief=tk.SUNKEN, borderwidth=0, background=bgColor,
                                      activebackground=bgColor)
-            deleteButton.configure(command=lambda idToPass=idForButton, thisButton=deleteButton: objectOperation(idToPass, "delete", thisButton))
+            deleteButton.configure(
+                command=lambda idToPass=idForButton, thisButton=deleteButton: objectOperation(idToPass, "delete",
+                                                                                              thisButton))
             deleteButton.grid(row=row, column=7, sticky="nwse", padx=(0, 10))
             columns.append(deleteButton)
             if row % 2 != 0:
@@ -226,31 +254,31 @@ class WidgetList:
                                            command=lambda: configureWidgets(self.rangeEnd - 2 * self.iterator,
                                                                             "backwards"))
             previousPageButton.grid(row=0, column=1, sticky="w")
-            page1Button = tk.Button(pageButtonsFrame3, text="1", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            page1Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page1Button.grid(row=0, column=2, sticky="w")
-            page2Button = tk.Button(pageButtonsFrame3, text="2", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            page2Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page2Button.grid(row=0, column=3, sticky="w")
-            page3Button = tk.Button(pageButtonsFrame3, text="3", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            page3Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page3Button.grid(row=0, column=4, sticky="w")
-            ttk.Label(pageButtonsFrame3, text="4", font=("Roboto Light", 10, "bold", "underline")).grid(row=0,
-                                                                                                        column=5,
-                                                                                                        sticky="w",
-                                                                                                        pady=(1, 0))
-            page5Button = tk.Button(pageButtonsFrame3, text="5", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            ttk.Label(pageButtonsFrame3, text="-", font=("Roboto Light", 10)).grid(row=0,
+                                                                                   column=5,
+                                                                                   sticky="w",
+                                                                                   pady=(1, 0))
+            page5Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page5Button.grid(row=0, column=6, sticky="w")
-            page6Button = tk.Button(pageButtonsFrame3, text="6", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            page6Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page6Button.grid(row=0, column=7, sticky="w")
-            page7Button = tk.Button(pageButtonsFrame3, text="7", font=("Roboto Light", 10), relief=tk.SUNKEN,
+            page7Button = tk.Button(pageButtonsFrame3, text="-", font=("Roboto Light", 10), relief=tk.SUNKEN,
                                     borderwidth=0, background=bgColor,
                                     activebackground=bgColor)
             page7Button.grid(row=0, column=8, sticky="w")

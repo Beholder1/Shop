@@ -61,12 +61,13 @@ class Database:
         for column in data:
             if column == "NULL":
                 command = command[:-1]
-                command += column + ", '"
+                command += str(column) + ", '"
             else:
-                command += column
+                command += str(column)
                 command += "', '"
         command = command[:-3]
         command += ")"
+        self.cur.execute(command)
         self.conn.commit()
 
     def insertUser(self, deptId, login, password, role, email, name, lastName, salary, pesel, createdOn, managerId):
@@ -110,12 +111,23 @@ class Database:
 
     def delete(self, table, column, value):
         self.cur.execute(
-            "DELETE FROM " + table + " WHERE " + column + " = '" + value + "'")
+            "DELETE FROM " + table + " WHERE " + column + " = '" + str(value) + "'")
         self.conn.commit()
 
     def insertProducts(self, list, userId):
-        self.cur.execute("select add_order(ARRAY" + str(list) + ", 1)")
+        self.cur.execute("select add_order(ARRAY" + str(list) + ", " + userId + ")")
         self.conn.commit()
+
+    def insertCart(self, list, userId, payment, name, lastName, country, province, city, code, street, number):
+        command = "select add_cart(ARRAY" + str(list) + ", " + str(userId) + ", '" + str(payment) + "', '" + str(name) + "', '" + str(lastName) + "', '" + str(country) + "', '" + str(province) + "', '" + str(city) + "', '" + str(code) + "', '" + str(street) + "', '" + str(number) + "')"
+        print(command)
+        self.cur.execute(command)
+
+        self.conn.commit()
+
+    def getLastId(self):
+        self.cur.execute("select max(user_id) from users")
+        return self.cur.fetchall()
 
     def chartData(self, productId, deptId, month, year):
         self.cur.execute(
@@ -144,7 +156,15 @@ class Database:
 
     def getReport(self, dept_id, dateStart, dateEnd):
         self.cur.execute(
-            "SELECT login, name, SUM(amount), ROUND(SUM(amount*(price * (1-tax_rate) - purchase_price))::numeric, 2) FROM carts INNER JOIN users USING(user_id) INNER JOIN products_in_carts USING(cart_id) INNER JOIN products USING (product_id) INNER JOIN departments USING (dept_id) INNER JOIN locations USING (location_id) INNER JOIN tax_rates USING(tax_rate_id) WHERE purchase_date BETWEEN TO_DATE('" + str(dateStart) + "','MM/DD/YY') AND TO_DATE('" + str(dateEnd) + "','MM/DD/YY') AND dept_id = " + str(dept_id) + " AND order_status <> 'nieopłacono' GROUP BY ROLLUP(login, name) ORDER BY login, name")
+            "SELECT login, name, SUM(amount), ROUND(SUM(amount*(price * (1-tax_rate) - purchase_price))::numeric, 2) FROM carts INNER JOIN users USING(user_id) INNER JOIN products_in_carts USING(cart_id) INNER JOIN products USING (product_id) INNER JOIN departments USING (dept_id) INNER JOIN locations USING (location_id) INNER JOIN tax_rates USING(tax_rate_id) WHERE purchase_date BETWEEN TO_DATE('" + str(
+                dateStart) + "','MM/DD/YY') AND TO_DATE('" + str(dateEnd) + "','MM/DD/YY') AND dept_id = " + str(
+                dept_id) + " AND order_status <> 'nieopłacono' GROUP BY ROLLUP(login, name) ORDER BY login, name")
+        data = self.cur.fetchall()
+        return data
+
+    def getReport1(self, dept_id, dateStart, dateEnd):
+        self.cur.execute(
+            "SELECT order_id, name, ROUND(sum(amount*purchase_price)::numeric, 2) cena_zakupu FROM products INNER JOIN ordered_products USING(product_id) INNER JOIN orders USING(order_id) INNER JOIN users USING(user_id) WHERE dept_id = " + dept_id + " GROUP BY order_id, ROLLUP(name) ORDER BY order_id, name")
         data = self.cur.fetchall()
         return data
 

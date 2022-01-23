@@ -6,6 +6,7 @@ from widgets import MessageBox
 from widgets import EditBox
 from widgets import AddOrdersBox
 from widgets import DisplayBox
+import pyglet
 
 
 class Order:
@@ -29,7 +30,31 @@ class Order:
         MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button, lambda: self.db.delete(self.tableName, "order_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.__str__(), indexes=3, combos=0)
+        def close():
+            root.destroy()
+            button.config(state="normal")
+
+        root = tk.Tk()
+
+        bgColor = "white"
+        pyglet.font.add_file('Roboto-Light.ttf')
+        button.config(state="disabled")
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.resizable(False, False)
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Edytuj")
+
+        l1 = []
+        for i in self.db.fetchAll("marks", "mark"):
+            l1.append(i[0])
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry0 = ttk.Entry(root)
+        entry0.grid(row=0, column=1)
+        button0 = tk.Button(root, text="Edytuj")
+        button0.grid(row=0, column=2)
+        button0.configure(command=lambda: self.db.set(self.tableName, "name", entry0.get(), "product_id", self.id))
 
     def display(self):
         DisplayBox(self.db, self.tableName, self.id, self.user, self.__str__())

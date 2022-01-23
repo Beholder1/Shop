@@ -2,6 +2,9 @@ from widgets import MessageBox
 from widgets import EditBox
 from widgets import AddBox
 from widgets import DisplayBox
+from tkinter import ttk
+import pyglet
+import tkinter as tk
 
 
 class Product:
@@ -31,23 +34,204 @@ class Product:
         self.totalIncome = round((self.price * (1-self.taxRate) - self.purchasePrice) * self.SoldInTotal, 2)
 
     def add(self, button):
-        addDictionary = {
-            "Nazwa": "name",
-            "Producent": "mark",
-            "Kategoria": "category",
-            "Cena zakupu": "purchase_price",
-            "Cena sprzedaży": "price",
-            "Jednostka": "amount_type",
-            "Podatek": "tax_rateX"
-        }
-        AddBox(button, self.db, self.tableName, addDictionary)
+
+        def command():
+            flag1 = True
+            for entry in entries:
+                if entry.get() == '':
+                    entry.configure()
+                    errorLabel.configure(text="Wypełnij wszystkie wymagane pola")
+                    flag1 = False
+            if flag1:
+                t = []
+                for e in entries:
+                    t.append(e.get())
+                t[1] = self.db.fetchAll("marks", "mark_id", add="WHERE mark = '"+str(t[1])+"'")[0][0]
+                t[2] = self.db.fetchAll("categories", "category_id", add="WHERE category = '"+str(t[2])+"'")[0][0]
+                t[6] = self.db.fetchAll("tax_rates", "tax_rate_id", add="WHERE tax_rate = '"+str(t[6])+"'")[0][0]
+                button.config(state="normal")
+                self.db.insert(self.tableName, [t[0], t[4], t[3], t[5], t[6], t[2], t[1]])
+                root.destroy()
+
+        def close():
+            root.destroy()
+            button.config(state="normal")
+
+        bgColor = "white"
+        buttonColor = "#0589CF"
+
+
+        pyglet.font.add_file('Roboto-Light.ttf')
+        button.config(state="disabled")
+        root = tk.Tk()
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.resizable(False, False)
+        root.title("Dodaj")
+
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+
+        entries = []
+        entry0 = ttk.Entry(root)
+        entry0.grid(row=0, column=1, sticky="w")
+        ttk.Label(root, text="Nazwa:", background=bgColor, font=("Roboto Light", 12)).grid(row=0,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry0)
+
+        l1 = []
+        for i in self.db.fetchAll("marks", "mark"):
+            l1.append(i[0])
+        entry1 = ttk.Combobox(root, values=l1)
+        entry1.grid(row=1, column=1, sticky="w")
+        ttk.Label(root, text="Producent:", background=bgColor, font=("Roboto Light", 12)).grid(row=1,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry1)
+
+        l2 = []
+        for i in self.db.fetchAll("categories", "category"):
+            l2.append(i[0])
+        entry2 = ttk.Combobox(root, values=l2)
+        entry2.grid(row=2, column=1, sticky="w")
+        ttk.Label(root, text="Kategoria:", background=bgColor, font=("Roboto Light", 12)).grid(row=2,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry2)
+        entry3 = ttk.Entry(root)
+        entry3.grid(row=3, column=1, sticky="w")
+        ttk.Label(root, text="Cena zakupu:", background=bgColor, font=("Roboto Light", 12)).grid(row=3,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry3)
+
+        entry4 = ttk.Entry(root)
+        entry4.grid(row=4, column=1, sticky="w")
+        ttk.Label(root, text="Cena sprzedaży:", background=bgColor, font=("Roboto Light", 12)).grid(row=4,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry4)
+
+        l4 = []
+        for i in self.db.getEnum("amount_type"):
+            l4.append(i)
+        entry5 = ttk.Combobox(root, values=l4)
+        entry5.grid(row=5, column=1, sticky="w")
+        ttk.Label(root, text="Jednostka:", background=bgColor, font=("Roboto Light", 12)).grid(row=5,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry5)
+
+        l3 = []
+        for i in self.db.fetchAll("tax_rates", "tax_rate"):
+            l3.append(i[0])
+        entry6 = ttk.Combobox(root, values=l3)
+        entry6.grid(row=6, column=1, sticky="w")
+        ttk.Label(root, text="Podatek:", background=bgColor, font=("Roboto Light", 12)).grid(row=6,
+                                                                                            column=0,
+                                                                                            sticky="w")
+        entries.append(entry6)
+
+        errorLabel = ttk.Label(root, text="", foreground="red", background=bgColor, font=("Roboto Light", 8))
+        errorLabel.grid(row=7, column=0, sticky="w")
+
+        tk.Button(root, text="Dodaj", width=10, background=buttonColor, fg="white",
+                  command=lambda: command()).grid(row=8, column=0, sticky="w")
 
     def delete(self, button):
         MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button,
                    lambda: self.db.delete(self.tableName, "product_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.__str__(), indexes=(1,2,3,4,5,6,7))
+        def close():
+            root.destroy()
+            button.config(state="normal")
+
+        root = tk.Tk()
+
+        bgColor = "white"
+        pyglet.font.add_file('Roboto-Light.ttf')
+        button.config(state="disabled")
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.resizable(False, False)
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Edytuj")
+
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry0 = ttk.Entry(root)
+        entry0.grid(row=0, column=1)
+        button0 = tk.Button(root, text="Edytuj")
+        button0.grid(row=0, column=2)
+        button0.configure(command=lambda: self.db.set(self.tableName, "name", entry0.get(), "product_id", self.id))
+
+        l1 = []
+        for i in self.db.fetchAll("marks", "mark"):
+            l1.append(i[0])
+        ttk.Label(root, text="Producent:").grid(row=1, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry1 = ttk.Combobox(root, values=l1)
+        entry1.grid(row=1, column=1)
+        button1 = tk.Button(root, text="Edytuj")
+        button1.grid(row=1, column=2)
+        button1.configure(command=lambda: self.db.set(self.tableName, "name", entry1.get(), "product_id", self.id))
+
+        ttk.Label(root, text="Cena zakupu:").grid(row=2, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry2 = ttk.Entry(root)
+        entry2.grid(row=2, column=1)
+        button2 = tk.Button(root, text="Edytuj")
+        button2.grid(row=2, column=2)
+        button2.configure(command=lambda: self.db.set(self.tableName, "purchase_price", entry2.get(), "product_id", self.id))
+
+        ttk.Label(root, text="Cena sprzedaży:").grid(row=3, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry3 = ttk.Entry(root)
+        entry3.grid(row=3, column=1)
+        button3 = tk.Button(root, text="Edytuj")
+        button3.grid(row=3, column=2)
+        button3.configure(command=lambda: self.db.set(self.tableName, "price", entry3.get(), "product_id", self.id))
+
+        l3 = []
+        for i in self.db.fetchAll("tax_rates", "tax_rate"):
+            l3.append(i[0])
+        ttk.Label(root, text="Podatek:").grid(row=4, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry4 = ttk.Combobox(root, values=l3)
+        entry4.grid(row=4, column=1)
+        button4 = tk.Button(root, text="Edytuj")
+        button4.grid(row=4, column=2)
+        button4.configure(command=lambda: self.db.set(self.tableName, "name", entry4.get(), "product_id", self.id))
+
+        l4 = []
+        for i in self.db.getEnum("amount_type"):
+            l4.append(i)
+        ttk.Label(root, text="Kategoria:").grid(row=5, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry5 = ttk.Combobox(root, values=l4)
+        entry5.grid(row=5, column=1)
+        button5 = tk.Button(root, text="Edytuj")
+        button5.grid(row=5, column=2)
+        button5.configure(command=lambda: self.db.set(self.tableName, "name", entry5.get(), "product_id", self.id))
+
+        l2 = []
+        for i in self.db.fetchAll("categories", "category"):
+            l2.append(i[0])
+        ttk.Label(root, text="Jednostka:").grid(row=6, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry6 = ttk.Combobox(root, values=l2)
+        entry6.grid(row=6, column=1)
+        button6 = tk.Button(root, text="Edytuj")
+        button6.grid(row=6, column=2)
+        button6.configure(command=lambda: self.db.set(self.tableName, "name", entry6.get(), "product_id", self.id))
+
+        ttk.Label(root, text="Ilość:").grid(row=7, column=0)
+        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
+        entry7 = ttk.Entry(root)
+        entry7.grid(row=7, column=1)
+        button7 = tk.Button(root, text="Edytuj")
+        button7.grid(row=7, column=2)
+        button7.configure(command=lambda: self.db.set(self.tableName, "name", entry7.get(), "product_id", self.id))
 
     def display(self):
         DisplayBox(self.db, self.tableName, self.id, self.deptId, self.__str__())

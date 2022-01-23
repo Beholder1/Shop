@@ -20,8 +20,8 @@ class Cart:
                                          add="INNER JOIN products_in_carts USING(product_id) WHERE cart_id = " + str(
                                              self.id))
 
-    def add(self, button):
-        AddOrdersBox(button, self.tableName)
+    def add(self, button, userId):
+        AddOrdersBox(self.db, button, self.tableName, userId)
 
     def delete(self, button):
         MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button, lambda: self.db.delete(self.tableName, "cart_id", self.id), "Usuń")
