@@ -73,7 +73,7 @@ class User:
         ttk.Label(frame, text="Powtórz " + text, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
         entry1 = ttk.Entry(frame)
         entry1.grid(row=1, column=1)
-        tk.Button(frame, text="Zatwierdź", command=edit).grid(row=2, column=1)
+        tk.Button(frame, text="Zatwierdź", width=10, background="#0589CF", fg="white", command=edit).grid(row=2, column=1)
 
     def add(self, button):
 
@@ -202,25 +202,25 @@ class User:
         root.protocol("WM_DELETE_WINDOW", lambda: close())
         root.title("Edytuj")
 
-        ttk.Label(root, text="Imię:").grid(row=0, column=0)
+        ttk.Label(root, text="Imię:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
         entry0 = ttk.Entry(root)
         entry0.grid(row=0, column=1)
         tk.Button(root, text="Edytuj").grid(row=0, column=2)
 
-        ttk.Label(root, text="Nazwisko:").grid(row=1, column=0)
+        ttk.Label(root, text="Nazwisko:", background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
         entry1 = ttk.Entry(root)
         entry1.grid(row=1, column=1)
         tk.Button(root, text="Edytuj").grid(row=1, column=2)
 
-        ttk.Label(root, text="Pensja:").grid(row=2, column=0)
+        ttk.Label(root, text="Pensja:", background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=0)
         entry2 = ttk.Entry(root)
         entry2.grid(row=2, column=1)
         tk.Button(root, text="Edytuj").grid(row=2, column=2)
 
-        ttk.Label(root, text="Odblokuj/Zablokuj:").grid(row=3, column=0)
+        ttk.Label(root, text="Odblokuj/Zablokuj:", background=bgColor, font=("Roboto Light", 12)).grid(row=3, column=0)
         entry3 = ttk.Entry(root)
         entry3.grid(row=3, column=1)
-        tk.Button(root, text="Edytuj").grid(row=3, column=2)
+        tk.Button(root, text="Edytuj", background=bgColor, font=("Roboto Light", 12)).grid(row=3, column=2)
 
 
 

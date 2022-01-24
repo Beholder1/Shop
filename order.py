@@ -48,12 +48,12 @@ class Order:
         l1 = []
         for i in self.db.fetchAll("marks", "mark"):
             l1.append(i[0])
-        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
-        ttk.Label(root, text="Nazwa:").grid(row=0, column=0)
-        entry0 = ttk.Entry(root)
-        entry0.grid(row=0, column=1)
-        button0 = tk.Button(root, text="Edytuj")
-        button0.grid(row=0, column=2)
+        ttk.Label(root, text="Status:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        ttk.Label(root, text=self.orderStatus).grid(row=0, column=1)
+        entry0 = ttk.Combobox(root, values=l1)
+        entry0.grid(row=0, column=2)
+        button0 = tk.Button(root, text="Edytuj", width=10, background="#0589CF")
+        button0.grid(row=0, column=3)
         button0.configure(command=lambda: self.db.set(self.tableName, "name", entry0.get(), "product_id", self.id))
 
     def display(self):

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from user import User
 from widgets import AutocompleteCombobox, SidebarMenu, OnlyMessageBox
 from WidgetList import WidgetList
@@ -32,7 +32,6 @@ class MainProgram:
 
             style = ttk.Style()
             style.configure('TLabel', background="white", foreground=fontColor, font=('Roboto Light', 12))
-            style.configure('TCheckbutton', background="white")
 
             # Konto
             frame1 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
@@ -42,12 +41,12 @@ class MainProgram:
             for singleInfo in accountInfo:
                 ttk.Label(frame1, text=singleInfo).grid(row=counter, column=0, sticky="w")
                 counter += 1
-            emailButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("email", emailButton))
+            emailButton = tk.Button(frame1, text="Zmień...", width=10, background="#0589CF", foreground="white", command=lambda: user.accountConfigureBox("email", emailButton))
             emailButton.grid(row=5, column=1, sticky="w")
-            phoneButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("phone_number", phoneButton))
+            phoneButton = tk.Button(frame1, text="Zmień...", width=10, background="#0589CF", foreground="white", command=lambda: user.accountConfigureBox("phone_number", phoneButton))
             phoneButton.grid(row=6, column=1, sticky="w")
             ttk.Label(frame1, text="Hasło: ").grid(row=9, column=0, sticky="w")
-            passwordButton = tk.Button(frame1, text="Zmień...", command=lambda: user.accountConfigureBox("password", passwordButton))
+            passwordButton = tk.Button(frame1, text="Zmień...", width=10, background="#0589CF", foreground="white", command=lambda: user.accountConfigureBox("password", passwordButton))
             passwordButton.grid(row=9, column=1, sticky="w")
 
             # Produkty
@@ -97,8 +96,16 @@ class MainProgram:
 
             def generateExcel(date1, date2):
                 data = db.getReport(user.dept_id, date1, date2)
+                data1 = db.getReport1(user.dept_id, date1, date2)
+                data2 = db.getReport2(user.dept_id, date1, date2)
+                # file = filedialog.asksaveasfile(filetypes=(("Plik Excel", ".xlsx"),
+                #                                            ("Plik Excel", ".xlsx")),
+                #                                 initialfile="Raport " + date1.replace("/", ".") + " - " + date2.replace(
+                #                                     "/", ".") + ".xlsx",
+                #                                 title='Zapisz plik',
+                #                                 initialdir="/")
                 workbook = xlsxwriter.Workbook("Raport " + date1.replace("/", ".") + " - " + date2.replace("/", ".") + ".xlsx")
-                worksheet = workbook.add_worksheet("Raport")
+                worksheet = workbook.add_worksheet("Pracownicy")
                 worksheet.write(0, 0, "Użytkownik")
                 worksheet.write(0, 1, "Nazwa produktu")
                 worksheet.write(0, 2, "Ilość")
@@ -109,6 +116,28 @@ class MainProgram:
                     worksheet.write(row, 1, d[1])
                     worksheet.write(row, 2, d[2])
                     worksheet.write(row, 3, d[3])
+                    row += 1
+
+                worksheet1 = workbook.add_worksheet("Zamówienia")
+                worksheet1.write(0, 0, "Zamówienie")
+                worksheet1.write(0, 1, "Nazwa produktu")
+                worksheet1.write(0, 2, "Przychód")
+                row = 1
+                for d in data1:
+                    worksheet1.write(row, 0, d[0])
+                    worksheet1.write(row, 1, d[1])
+                    worksheet1.write(row, 2, d[2])
+                    row += 1
+
+                worksheet2 = workbook.add_worksheet("Dostawy")
+                worksheet2.write(0, 0, "Dostawa")
+                worksheet2.write(0, 1, "Nazwa produktu")
+                worksheet2.write(0, 2, "Koszt")
+                row = 1
+                for d in data2:
+                    worksheet2.write(row, 0, d[0])
+                    worksheet2.write(row, 1, d[1])
+                    worksheet2.write(row, 2, d[2])
                     row += 1
 
                 workbook.close()

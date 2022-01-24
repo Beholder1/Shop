@@ -119,7 +119,9 @@ class Database:
         self.conn.commit()
 
     def insertCart(self, list, userId, payment, name, lastName, country, province, city, code, street, number):
-        command = "select add_cart(ARRAY" + str(list) + ", " + str(userId) + ", '" + str(payment) + "', '" + str(name) + "', '" + str(lastName) + "', '" + str(country) + "', '" + str(province) + "', '" + str(city) + "', '" + str(code) + "', '" + str(street) + "', '" + str(number) + "')"
+        command = "select add_cart(ARRAY" + str(list) + ", " + str(userId) + ", '" + str(payment) + "', '" + str(
+            name) + "', '" + str(lastName) + "', '" + str(country) + "', '" + str(province) + "', '" + str(
+            city) + "', '" + str(code) + "', '" + str(street) + "', '" + str(number) + "')"
         print(command)
         self.cur.execute(command)
 
@@ -164,7 +166,15 @@ class Database:
 
     def getReport1(self, dept_id, dateStart, dateEnd):
         self.cur.execute(
-            "SELECT order_id, name, ROUND(sum(amount*purchase_price)::numeric, 2) cena_zakupu FROM products INNER JOIN ordered_products USING(product_id) INNER JOIN orders USING(order_id) INNER JOIN users USING(user_id) WHERE dept_id = " + dept_id + " GROUP BY order_id, ROLLUP(name) ORDER BY order_id, name")
+            "SELECT order_id, name, ROUND(sum(amount*purchase_price)::numeric, 2) cena_zakupu FROM products INNER JOIN ordered_products USING(product_id) INNER JOIN orders USING(order_id) INNER JOIN users USING(user_id) WHERE order_date BETWEEN TO_DATE('" + str(dateStart) + "','MM/DD/YY') AND TO_DATE('" + str(dateEnd) + "','MM/DD/YY') AND dept_id = " + str(
+                dept_id) + " AND order_status <> 'nieopłacono' GROUP BY order_id, ROLLUP(name) ORDER BY order_id, name")
+        data = self.cur.fetchall()
+        return data
+
+    def getReport2(self, dept_id, dateStart, dateEnd):
+        self.cur.execute(
+            "SELECT cart_id, name, ROUND(sum(amount*purchase_price)::numeric, 2) cena_zakupu FROM products INNER JOIN products_in_carts USING(product_id) INNER JOIN carts USING(cart_id) INNER JOIN users USING(user_id) WHERE purchase_date BETWEEN TO_DATE('" + str(dateStart) + "','MM/DD/YY') AND TO_DATE('" + str(dateEnd) + "','MM/DD/YY') AND dept_id = " + str(
+                dept_id) + " AND order_status <> 'nieopłacono' GROUP BY cart_id, ROLLUP(name) ORDER BY cart_id, name;")
         data = self.cur.fetchall()
         return data
 
