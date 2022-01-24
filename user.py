@@ -97,6 +97,7 @@ class User:
                                    [createLogin(t[0], t[1], self.db.getLastId()[0][0] + 1), t[2], "pracownik", t[5], t[6],
                                     t[0], t[1], t[4], t[2], datetime.now(), datetime.now(), "false", self.dept_id,
                                     self.id])
+                self.db.createLogin()
                 root.destroy()
 
         def close():

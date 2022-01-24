@@ -163,6 +163,10 @@ class Database:
         self.cur.execute("select add_amount(" + str(productId) + ", " + str(deptId) + ", " + str(amount) + ")")
         self.conn.commit()
 
+    def createLogin(self):
+        self.cur.execute("UPDATE users SET login = concat(login, (SELECT currval('users_user_id_seq'))) WHERE user_id = (SELECT currval('users_user_id_seq'))")
+        self.conn.commit()
+
     def getReport(self, dept_id, dateStart, dateEnd):
         self.cur.execute(
             "SELECT login, name, SUM(amount), ROUND(SUM(amount*(price * (1-tax_rate) - purchase_price))::numeric, 2) FROM carts INNER JOIN users USING(user_id) INNER JOIN products_in_carts USING(cart_id) INNER JOIN products USING (product_id) INNER JOIN departments USING (dept_id) INNER JOIN locations USING (location_id) INNER JOIN tax_rates USING(tax_rate_id) WHERE purchase_date BETWEEN TO_DATE('" + str(
