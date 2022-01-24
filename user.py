@@ -203,24 +203,46 @@ class User:
         root.title("Edytuj")
 
         ttk.Label(root, text="Imię:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        ttk.Label(root, text=self.name, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=1)
         entry0 = ttk.Entry(root)
-        entry0.grid(row=0, column=1)
-        tk.Button(root, text="Edytuj").grid(row=0, column=2)
+        entry0.grid(row=0, column=2)
+        button0 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
+        button0.grid(row=0, column=3)
+        button0.configure(command=lambda: self.db.set(self.tableName, "first_name", entry0.get(), "user_id", self.id))
 
         ttk.Label(root, text="Nazwisko:", background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=0)
+        ttk.Label(root, text=self.last_name, background=bgColor, font=("Roboto Light", 12)).grid(row=1, column=1)
         entry1 = ttk.Entry(root)
-        entry1.grid(row=1, column=1)
-        tk.Button(root, text="Edytuj").grid(row=1, column=2)
+        entry1.grid(row=1, column=2)
+        button1 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
+        button1.grid(row=1, column=3)
+        button1.configure(command=lambda: self.db.set(self.tableName, "last_name", entry1.get(), "user_id", self.id))
 
         ttk.Label(root, text="Pensja:", background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=0)
+        ttk.Label(root, text=self.salary, background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=1)
         entry2 = ttk.Entry(root)
-        entry2.grid(row=2, column=1)
-        tk.Button(root, text="Edytuj").grid(row=2, column=2)
+        entry2.grid(row=2, column=2)
+        button2 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
+        button2.grid(row=2, column=3)
+        button2.configure(command=lambda: self.db.set(self.tableName, "salary", entry2.get(), "user_id", self.id))
 
-        ttk.Label(root, text="Odblokuj/Zablokuj:", background=bgColor, font=("Roboto Light", 12)).grid(row=3, column=0)
-        entry3 = ttk.Entry(root)
-        entry3.grid(row=3, column=1)
-        tk.Button(root, text="Edytuj", background=bgColor, font=("Roboto Light", 12)).grid(row=3, column=2)
+        def com():
+            self.db.set(self.tableName, "is_blocked", not self.isBlocked, "user_id", self.id)
+            self.isBlocked = not self.isBlocked
+            if self.isBlocked:
+                button3.configure(text="Odblokuj")
+            else:
+                button3.configure(text="Zablokuj")
+
+        if not self.isBlocked:
+            button3 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Zablokuj")
+            button3.grid(row=3, column=0)
+            button3.configure(command=lambda: com())
+        else:
+            button3 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Odblokuj")
+            button3.grid(row=3, column=0)
+            button3.configure(
+                command=lambda: com())
 
 
 

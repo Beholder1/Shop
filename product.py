@@ -175,7 +175,7 @@ class Product:
         entry1.grid(row=1, column=2)
         button1 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
         button1.grid(row=1, column=3)
-        button1.configure(command=lambda: self.db.set(self.tableName, "name", entry1.get(), "product_id", self.id))
+        button1.configure(command=lambda: self.db.set(self.tableName, "mark_id", self.db.fetchAll("marks", "mark_id", add="WHERE mark = '" + entry1.get() + "'")[0][0], "product_id", self.id))
 
         ttk.Label(root, text="Cena zakupu:", background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=0)
         ttk.Label(root, text=self.purchasePrice, background=bgColor, font=("Roboto Light", 12)).grid(row=2, column=1)
@@ -202,7 +202,7 @@ class Product:
         entry4.grid(row=4, column=2)
         button4 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
         button4.grid(row=4, column=3)
-        button4.configure(command=lambda: self.db.set(self.tableName, "name", entry4.get(), "product_id", self.id))
+        button4.configure(command=lambda: self.db.set(self.tableName, "tax_rate_id", self.db.fetchAll("tax_rates", "tax_rate_id", add="WHERE tax_rate = '" + entry4.get() + "'")[0][0], "product_id", self.id))
 
         l2 = []
         for i in self.db.fetchAll("categories", "category"):
@@ -213,7 +213,7 @@ class Product:
         entry5.grid(row=5, column=2)
         button5 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
         button5.grid(row=5, column=3)
-        button5.configure(command=lambda: self.db.set(self.tableName, "name", entry5.get(), "product_id", self.id))
+        button5.configure(command=lambda: self.db.set(self.tableName, "category_id", self.db.fetchAll("categories", "category_id", add="WHERE category = '" + entry5.get() + "'")[0][0], "product_id", self.id))
 
         l4 = []
         for i in self.db.getEnum("amount_type"):
@@ -224,7 +224,7 @@ class Product:
         entry6.grid(row=6, column=2)
         button6 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
         button6.grid(row=6, column=3)
-        button6.configure(command=lambda: self.db.set(self.tableName, "name", entry6.get(), "product_id", self.id))
+        button6.configure(command=lambda: self.db.set(self.tableName, "amount_type", entry6.get(), "product_id", self.id))
 
         ttk.Label(root, text="Ilość:", background=bgColor, font=("Roboto Light", 12)).grid(row=7, column=0)
         ttk.Label(root, text=self.amount, background=bgColor, font=("Roboto Light", 12)).grid(row=7, column=1)

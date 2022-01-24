@@ -69,6 +69,12 @@ class WidgetList:
                 if key == "add":
                     addition = item
             self.itemList = db.fetchAll(table, columnNames, add=addition)
+        for i in range(len(self.itemList)):
+            k = list(self.itemList[i])
+            for x in range(len(k)):
+                if k[x] is None:
+                    k[x]="-"
+            self.itemList[i] = tuple(k)
 
         self.itemList.sort()
         self.iterator = 25

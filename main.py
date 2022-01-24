@@ -66,5 +66,5 @@ class Login:
 
 if __name__ == "__main__":
     # db = Database()
-    # db.insertProducts()
+    # print(db.fetchAll("orders", "*", add="WHERE order_id = 1001")[0][3])
     Login()
