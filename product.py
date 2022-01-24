@@ -232,7 +232,7 @@ class Product:
         entry7.grid(row=7, column=2)
         button7 = tk.Button(root, width=10, background="#0589CF", fg="white", text="Edytuj")
         button7.grid(row=7, column=3)
-        button7.configure(command=lambda: self.db.set(self.tableName, "name", entry7.get(), "product_id", self.id))
+        button7.configure(command=lambda: self.db.addAmount(self.id, self.deptId, entry7.get()))
 
     def display(self):
         DisplayBox(self.db, self.tableName, self.id, self.deptId, self.__str__())

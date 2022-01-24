@@ -160,7 +160,7 @@ class MainProgram:
                headersbackground="#d8edf8", normalbackground="white", foreground='white',
                normalforeground='black', headersforeground='black')
             dateEnd.grid(row=1, column=2)
-            tk.Button(frame6Content, text="Pokaż raport", command=lambda: generateExcel(dateStart.get_date(), dateEnd.get_date())).grid(row=2, column=1)
+            tk.Button(frame6Content, width=10, background="#0589CF", fg="white", text="Stwórz raport", command=lambda: generateExcel(dateStart.get_date(), dateEnd.get_date())).grid(row=2, column=1)
 
             frame0 = tk.Frame(root, bg=bgColor, borderwidth=1, relief=tk.RIDGE)
             frame0.grid(row=0, column=1, sticky="nwse")

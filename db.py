@@ -103,10 +103,13 @@ class Database:
         data = self.cur.fetchall()
         return data
 
-    def set(self, table, column, value, criterionColumn, criterionValue):
-        self.cur.execute(
-            "UPDATE " + str(table) + " SET " + str(column) + " = '" + str(value) + "' WHERE " + str(
-                criterionColumn) + " = '" + str(criterionValue) + "'")
+    def set(self, table, column, value, criterionColumn, criterionValue, **kwargs):
+        command = "UPDATE " + str(table) + " SET " + str(column) + " = '" + str(value) + "' WHERE " + str(
+                criterionColumn) + " = '" + str(criterionValue) + "'"
+        for key, item in kwargs.items():
+            if key == "add":
+                command += " " + item
+        self.cur.execute(command)
         self.conn.commit()
 
     def delete(self, table, column, value):
@@ -115,7 +118,7 @@ class Database:
         self.conn.commit()
 
     def insertProducts(self, list, userId):
-        self.cur.execute("select add_order(ARRAY" + str(list) + ", " + userId + ")")
+        self.cur.execute("select add_order(ARRAY" + str(list) + ", " + str(userId) + ")")
         self.conn.commit()
 
     def insertCart(self, list, userId, payment, name, lastName, country, province, city, code, street, number):
@@ -155,6 +158,10 @@ class Database:
             menedzer = random.choice(gowno[p[1]])
             self.cur.execute("UPDATE users SET manager_id = " + str(menedzer) + " WHERE user_id = " + str(p[0]))
             self.conn.commit()
+
+    def addAmount(self, productId, deptId, amount):
+        self.cur.execute("select add_amount(" + str(productId) + ", " + str(deptId) + ", " + str(amount) + ")")
+        self.conn.commit()
 
     def getReport(self, dept_id, dateStart, dateEnd):
         self.cur.execute(
