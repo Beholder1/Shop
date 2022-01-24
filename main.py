@@ -13,6 +13,7 @@ class Login:
         fontColor = 'black'
         widgetWidth = 40
         pyglet.font.add_file('Roboto-Light.ttf')
+        self.bigC = 0
 
         def combine(rootToDestroy, loginGet, passwordGet):
             if loginGet == '' or (loginGet == '' and passwordGet == ''):
@@ -27,6 +28,10 @@ class Login:
                         mainProgram.MainProgram(db, user[0])
                     else:
                         errorLabel.configure(text="Niepoprawne hasło")
+                        self.bigC += 1
+                        if self.bigC == 3:
+                            db.set("users", "is_blocked", True, "login", loginGet)
+                            self.bigC = 0
                 else:
                     errorLabel.configure(text="Nie ma takiego użytkownika")
 

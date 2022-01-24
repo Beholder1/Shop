@@ -49,7 +49,7 @@ class Cart:
         for i in self.db.getEnum("order_status"):
             l1.append(i)
         ttk.Label(root, text="Status:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
-        ttk.Label(root, text=self.orderStatus).grid(row=0, column=1)
+        ttk.Label(root, text=self.status, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=1)
         entry0 = ttk.Combobox(root, values=l1)
         entry0.grid(row=0, column=2)
         button0 = tk.Button(root, text="Edytuj", width=10, background="#0589CF", fg="white")
