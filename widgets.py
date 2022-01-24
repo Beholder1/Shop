@@ -271,7 +271,7 @@ class DisplayBox:
         root.configure(background=bgColor, borderwidth=1,
                        relief=tk.RIDGE)
         ttk.Label(root, text=strCommand, background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
-
+        root.title("Element o id = " + str(id))
         root.resizable(False, False)
 
         if name == "products":
