@@ -2,6 +2,9 @@ from widgets import MessageBox
 from widgets import EditBox
 from widgets import AddOrdersBox
 from widgets import DisplayBox
+import tkinter as tk
+import pyglet
+from tkinter import ttk
 
 
 class Cart:
@@ -27,7 +30,32 @@ class Cart:
         MessageBox("Czy na pewno chcesz usunąć element o id = " + str(self.id) + "?", button, lambda: self.db.delete(self.tableName, "cart_id", self.id), "Usuń")
 
     def edit(self, button):
-        EditBox(self.db, button, self.__str__(), indexes=4, combos=0)
+        def close():
+            root.destroy()
+            button.config(state="normal")
+
+        root = tk.Tk()
+
+        bgColor = "white"
+        pyglet.font.add_file('Roboto-Light.ttf')
+        button.config(state="disabled")
+        root.configure(background=bgColor, borderwidth=1,
+                       relief=tk.RIDGE)
+        root.resizable(False, False)
+        root.protocol("WM_DELETE_WINDOW", lambda: close())
+        root.title("Edytuj")
+
+        l1 = []
+        for i in self.db.getEnum("order_status"):
+            l1.append(i)
+        ttk.Label(root, text="Status:", background=bgColor, font=("Roboto Light", 12)).grid(row=0, column=0)
+        ttk.Label(root, text=self.orderStatus).grid(row=0, column=1)
+        entry0 = ttk.Combobox(root, values=l1)
+        entry0.grid(row=0, column=2)
+        button0 = tk.Button(root, text="Edytuj", width=10, background="#0589CF", fg="white")
+        button0.grid(row=0, column=3)
+        button0.configure(
+            command=lambda: self.db.set(self.tableName, "order_status", entry0.get(), "cart_id", self.id))
 
     def display(self):
         DisplayBox(self.db, self.tableName, self.id, self.user, self.__str__())
