@@ -62,7 +62,7 @@ class WidgetList:
 
         addition = ""
         self.startingIndex = 0
-        if table == "users":
+        if table == "users" and user.role != "pracownik":
             self.itemList = db.fetchEmployeesAdmin(user.id, columnNames)
         else:
             for key, item in kwargs.items():
@@ -85,9 +85,6 @@ class WidgetList:
         self.sortingMethod = 0
         self.reverse = False
 
-        if len(self.itemList) % self.iterator != 0:
-            for i in range(self.iterator - len(self.itemList) % self.iterator):
-                self.itemList
 
         buttonsFrame = tk.Frame(frame, background=bgColor)
         buttonsFrame.grid(row=0, column=0, sticky="w")
